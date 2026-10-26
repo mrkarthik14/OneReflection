@@ -1,0 +1,348 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-container": "#f9df72", "surface-container-lowest": "#ffffff", "outline": "#82737a", "tertiary-fixed": "#dae2ff", "surface-tint": "#864b70", "on-secondary-container": "#736200", "on-tertiary-fixed": "#091a3e", "surface-bright": "#fcf9f8", "secondary-fixed-dim": "#dfc65c", "inverse-primary": "#fab0dc", "surface-dim": "#dcd9d9", "surface": "#fcf9f8", "outline-variant": "#d4c2c9", "on-primary": "#ffffff", "on-primary-fixed-variant": "#6b3358", "inverse-on-surface": "#f3f0ef", "primary-fixed-dim": "#fab0dc", "primary": "#864b70", "on-surface": "#1c1b1b", "surface-container-high": "#eae7e7", "on-secondary": "#ffffff", "background": "#fcf9f8", "on-secondary-fixed": "#221b00", "surface-container-highest": "#e5e2e1", "primary-fixed": "#ffd8ec", "on-tertiary-fixed-variant": "#38466c", "inverse-surface": "#313030", "on-primary-fixed": "#37062a", "primary-container": "#f5acd7", "surface-container": "#f0eded", "on-primary-container": "#753c61", "on-tertiary-container": "#414e76", "on-error-container": "#93000a", "on-background": "#1c1b1b", "on-surface-variant": "#50434a", "on-secondary-fixed-variant": "#534600", "surface-variant": "#e5e2e1", "tertiary-container": "#b3c1ef", "surface-container-low": "#f6f3f2", "secondary": "#6f5d00", "secondary-fixed": "#fce275", "error-container": "#ffdad6", "on-error": "#ffffff", "tertiary": "#4f5d85", "tertiary-fixed-dim": "#b7c5f3", "error": "#ba1a1a", "on-tertiary": "#ffffff" }, borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, spacing: { "space-md": "1rem", "space-xs": "0.25rem", "margin-mobile": "1rem", "margin": "1.25rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "gutter-mobile": "0.75rem", "gutter": "1rem", "space-xl": "2rem" }, fontFamily: { "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Space Grotesk"], "display-lg-mobile": ["Space Grotesk"], "label-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "display-lg": ["Space Grotesk"], "title-md": ["Plus Jakarta Sans"], "headline-lg": ["Space Grotesk"], "headline-sm": ["Space Grotesk"] }, fontSize: { "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "headline-md": ["24px", { lineHeight: "30px", fontWeight: "600" }], "display-lg-mobile": ["36px", { lineHeight: "44px", fontWeight: "700" }], "label-lg": ["14px", { lineHeight: "18px", fontWeight: "600" }], "label-sm": ["10px", { lineHeight: "12px", fontWeight: "700" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "display-lg": ["44px", { lineHeight: "52px", fontWeight: "700" }], "title-md": ["18px", { lineHeight: "24px", fontWeight: "600" }], "headline-lg": ["32px", { lineHeight: "38px", fontWeight: "700" }], "headline-sm": ["20px", { lineHeight: "26px", fontWeight: "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="OneReflection Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1y8HYQaA6N1SwUPvYCCEhBLis0lRFIr5w9iFFie-aodnq9vebO21UNsin812dB8Ze8ARDbQDmpgfTd5cVl8vs-Bz5rVetRfVkRcEJUWOE8i86HD3NIpBA3f2qlf1RiZfgkKnRVIlzV8ei4vybU1Zh_e-VdI_TZOZaKQUETJwYIX9qJHKlp1Z4WFujEUeP2ATnMIT5cjJQagElslNnNinyHtOmyh7JP-45ICM9y37-JixYVBta8-eh"><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">OneReflection</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Home</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Notifications" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><a aria-label="User Profile" class="w-11 h-11 flex items-center justify-center rounded-full hover:opacity-90 transition-opacity" data-path="profile-settings" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBE7jpIocCISc-CQYfgAnahVZmLt7VB9UJKlTFKJX9JEBM0KeqWHrnY0EOlX7Xr016w-StCO-DfHViu0fGfhqLc5xXymxW-Idb1KIskGYbnQtfZt9R24CzmTiiG97t1oqT6BRybyaDZrINztAvlimWlhHUhwdR_IyfwE_j6uA1V6l9K1-IiXMA6jRa5-JRXxNhlmHpahWf3zorVKk7seurAn3RnMPBzb_UQpUlVYYBvZMwd1oKmMCq0"></a></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full px-margin pb-12 gap-space-lg">
+<!-- 1. Top Sticker & Editorial Header -->
+<section class="flex flex-col gap-space-xs pt-space-sm">
+<div class="inline-flex self-start items-center gap-1.5 px-3 py-1 bg-surface-container-high rounded-full transform -rotate-1 shadow-sm">
+<span class="font-label-sm text-label-sm text-on-surface tracking-wide uppercase">✨ YOUR SPACE • PREFERENCES &amp; IDENTITY</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">Profile &amp; Harmony.</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Manage your voice persona, partner sync mesh, bedtime routines, and privacy boundaries.</p>
+</section>
+<!-- 2. Hero Profile Bento Card (Candy Pink #f5acd7) -->
+<section class="bg-primary-container text-on-primary-container p-space-lg relative overflow-hidden flex flex-col gap-space-md shadow-sm rounded-xl">
+<!-- Top Row: Avatar, Status & Edit Badge -->
+<div class="flex items-start justify-between">
+<div class="relative">
+<div class="w-20 h-20 rounded-full overflow-hidden shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Warm natural portrait of Elena Vance with soft ambient daylight, artistic lifestyle photography with soft warm tones and genuine gentle smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMYHW8k9z51Xkatfek6wZkv-CIqjIvDUFN29vkk4Bf8OHDgo4vMAL_XBulItDd2nYvILSTSvhIoWcfbyjmiY4cqlAMfcfw9_l-HrgzOpGuhhZ-PWHXRc8ATpS5U784xnMnADzLsNnuQGqchKjv73LSFj3imgnA9UPg5r8XIgl1Rji_Me1rvU5GCJk9iqyqFavQz8TfA42hWsOvXKBJxNdgHquEU4HW5a7uzjoufRtmKQ6ZKS4UGtxo">
+</div>
+<button aria-label="Edit avatar" class="absolute -bottom-1 -right-1 w-7 h-7 bg-inverse-surface text-inverse-on-surface rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<!-- Status Sticker -->
+<div class="inline-flex items-center gap-1 px-3 py-1.5 bg-surface-container-lowest text-on-surface rounded-full transform rotate-2 shadow-sm">
+<span class="font-label-sm text-label-sm">Awake &amp; Flowing ☀️</span>
+</div>
+</div>
+<!-- Identity Info -->
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md tracking-tight text-on-primary-container font-bold">Elena Vance</span>
+<span class="material-symbols-outlined text-[20px] text-on-primary-container" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="font-label-md text-label-md opacity-80">@elenavance</span>
+<span class="font-body-sm text-body-sm mt-1.5 opacity-90">OneReflection Member since Nov 2023 • Deep Sync Active</span>
+</div>
+<!-- Paired Partner Mesh Tile -->
+<div class="bg-surface-container-lowest/90 backdrop-blur-sm rounded-DEFAULT p-3.5 flex flex-col gap-2 text-on-surface">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="relative flex items-center justify-center">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary animate-ping absolute"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary relative"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md truncate font-semibold">Paired with Maya R. (@mayar)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Live Heartbeat &amp; Morning Mesh Active</span>
+</div>
+</div>
+<span class="px-2.5 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full font-label-sm text-label-sm whitespace-nowrap">Mutual Consent 🛡️</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-11 rounded-full bg-inverse-surface text-surface-bright font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span class="">Edit Profile</span>
+</button>
+<button class="h-11 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+<span class="">Identity Key</span>
+</button>
+</div>
+</section>
+<!-- 3. Voice Persona & Audio Settings Bento (Butter Yellow #f9df72) -->
+<section class="bg-secondary-container text-on-secondary-container p-space-lg flex flex-col gap-space-md shadow-sm rounded-xl">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider opacity-75">Acoustic Identity</span>
+<h2 class="font-headline-sm text-headline-sm tracking-tight">Voice Persona &amp; Mic Quality</h2>
+</div>
+<div class="w-9 h-9 rounded-full bg-surface-container-lowest/80 text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">graphic_eq</span>
+</div>
+</div>
+<!-- Audio EQ Preset Selection -->
+<div class="flex flex-col gap-2">
+<span class="font-label-sm text-label-sm font-semibold">EQ Profile Presets</span>
+<div class="flex flex-wrap gap-2">
+<button class="px-3.5 py-2 rounded-full bg-inverse-surface text-surface-bright font-label-md text-label-md flex items-center gap-1.5 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed"></span>
+<span class="">Crisp Studio (Active)</span>
+</button>
+<button class="px-3.5 py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md active:bg-surface-container-high transition-colors">
+<span class="">Warm Vintage Mic</span>
+</button>
+<button class="px-3.5 py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md active:bg-surface-container-high transition-colors">
+<span class="">Soft Whisper EQ</span>
+</button>
+</div>
+</div>
+<!-- Audio Delivery Toggle -->
+<div class="bg-surface-container-lowest/90 rounded-DEFAULT p-3.5 flex items-center justify-between text-on-surface">
+<div class="flex flex-col pr-2">
+<span class="font-label-md text-label-md font-semibold">Gentle Fade-in on Alarms</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Gradual volume swells over 4 minutes</span>
+</div>
+<!-- Toggle Switch ON -->
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-12 h-7 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+<!-- Fidelity & Test Ping Row -->
+<div class="flex items-center justify-between gap-2 pt-1">
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-lowest/70 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-secondary">mic</span>
+<span class="font-label-sm text-label-sm font-semibold">48kHz Lossless FLAC</span>
+</div>
+<button class="h-10 px-4 rounded-full bg-inverse-surface text-surface-bright font-label-md text-label-md flex items-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+<span class="">Test Voice Ping</span>
+</button>
+</div>
+</section>
+<!-- 4. Partner & Circle Synchronization (Lavender Blue #b7c5f3) -->
+<section class="bg-tertiary-fixed-dim text-on-tertiary-fixed p-space-lg flex flex-col gap-space-md shadow-sm rounded-xl">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider opacity-75">Resonance Network</span>
+<h2 class="font-headline-sm text-headline-sm tracking-tight">Sync &amp; Sharing Mesh</h2>
+</div>
+<div class="w-9 h-9 rounded-full bg-surface-container-lowest/80 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+</div>
+</div>
+<!-- Active Circles List -->
+<div class="flex flex-col gap-2">
+<!-- Item 1 -->
+<div class="bg-surface-container-lowest/90 rounded-DEFAULT p-3 flex items-center justify-between text-on-surface">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold font-headline-sm text-headline-sm">
+            M
+          </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold">Maya R.</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Full Voice, Routines &amp; Wake Sync</span>
+</div>
+</div>
+<span class="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-label-sm font-bold">Primary</span>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-container-lowest/90 rounded-DEFAULT p-3 flex items-center justify-between text-on-surface">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold font-headline-sm text-headline-sm">
+            L
+          </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold">Leo Chen</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Sprint &amp; Tasks mesh only</span>
+</div>
+</div>
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded-full font-label-sm text-label-sm">Partner</span>
+</div>
+<!-- Item 3 -->
+<div class="bg-surface-container-lowest/90 rounded-DEFAULT p-3 flex items-center justify-between text-on-surface">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold font-headline-sm text-headline-sm">
+            F
+          </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold">Family Hub</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Voice wake-ups only</span>
+</div>
+</div>
+<span class="px-2 py-0.5 bg-surface-container-high text-on-surface-variant rounded-full font-label-sm text-label-sm">Circle</span>
+</div>
+</div>
+<!-- Synchronization Rules Toggles -->
+<div class="flex flex-col gap-2 pt-1 text-on-surface">
+<!-- Toggle 1 -->
+<div class="bg-surface-container-lowest/80 rounded-DEFAULT p-3 flex items-center justify-between">
+<span class="font-body-md text-body-md font-medium">Morning Wake-up Voice Notes</span>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</div>
+<!-- Toggle 2 -->
+<div class="bg-surface-container-lowest/80 rounded-DEFAULT p-3 flex items-center justify-between">
+<span class="font-body-md text-body-md font-medium">Shared Habit Streak Visibility</span>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</div>
+<!-- Toggle 3 -->
+<div class="bg-surface-container-lowest/80 rounded-DEFAULT p-3 flex items-center justify-between">
+<span class="font-body-md text-body-md font-medium">Live Presence &amp; "Awake" Signal</span>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</div>
+<!-- DND Routine Pill -->
+<div class="bg-surface-container-lowest/80 rounded-DEFAULT p-3 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-medium">Quiet Hours Sync</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Bedtime silence locked</span>
+</div>
+<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-label-md font-semibold">22:30 - 07:00</span>
+</div>
+</div>
+</section>
+<!-- 5. Mindful Notifications (Warm Off-White Container) -->
+<section class="bg-surface-container-low p-space-lg flex flex-col gap-space-md shadow-sm rounded-xl">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[18px]">spa</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm tracking-tight text-on-surface">Mindful Notifications</h2>
+</div>
+<span class="font-label-sm text-label-sm px-2.5 py-1 bg-surface-container-highest text-on-surface-variant rounded-full">Calm Mode</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Item 1 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-3.5 flex items-center justify-between">
+<div class="flex flex-col pr-2">
+<span class="font-label-md text-label-md text-on-surface font-semibold">No-Pressure Daily Nudges</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Polite check-ins that never stack</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-3.5 flex items-center justify-between">
+<div class="flex flex-col pr-2">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Soft Haptic Vibration Rhythms</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Gentle organic motor waveforms</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Sound Selector -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-3.5 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Reminder Chime Sound</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tibetan Singing Bowl</span>
+</div>
+<button aria-label="Play sound preview" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 6. Privacy, Storage & Security -->
+<section class="bg-surface-container-low p-space-lg flex flex-col gap-space-md shadow-sm rounded-xl">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm tracking-tight text-on-surface">Privacy &amp; Data Vault</h2>
+</div>
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Encryption Badge -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-3.5 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-secondary">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">End-to-End Bubble Encryption</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Only sync keys stored on-device</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Always On</span>
+</div>
+<!-- Cache Management -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-3.5 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Offline Audio Cache</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">248 MB stored locally</span>
+</div>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md active:bg-error-container active:text-on-error-container transition-colors">
+          Clear Cache
+        </button>
+</div>
+<!-- Export Action -->
+<button class="w-full bg-surface-container-lowest rounded-DEFAULT p-3.5 flex items-center justify-between text-left active:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">cloud_download</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Export Voice Journals &amp; Data</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- 7. Account Actions & App Meta -->
+<section class="flex flex-col items-center gap-space-md pt-space-xs">
+<div class="grid grid-cols-2 gap-space-sm w-full">
+<button class="h-12 rounded-full bg-surface-container-high text-on-surface font-label-lg text-label-lg flex items-center justify-center gap-1.5 active:scale-95 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-[18px]">switch_account</span>
+<span class="">Switch Account</span>
+</button>
+<button class="h-12 rounded-full bg-error-container text-on-error-container font-label-lg text-label-lg flex items-center justify-center gap-1.5 active:scale-95 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span class="">Sign Out</span>
+</button>
+</div>
+<!-- Organic Meta Footer -->
+<div class="flex flex-col items-center text-center gap-1 pt-2">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">favorite</span>
+<span class="font-label-sm text-label-sm">Built for mindful human connection</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant opacity-75">OneReflection v2.4.1 (Build 490)</span>
+</div>
+</section>
+</div>
+<script>
+  // Micro-interaction sound toggle previews and feedback
+  document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
+    toggle.addEventListener('change', (e) => {
+      const parent = e.target.closest('div');
+      if (parent) {
+        parent.style.transform = 'scale(0.98)';
+        setTimeout(() => { parent.style.transform = 'none'; }, 120);
+      }
+    });
+  });
+</script></main><div class="fixed bottom-0 inset-x-0 z-50 pb-safe px-margin pointer-events-none"><nav class="pointer-events-auto mx-auto mb-space-sm max-w-sm h-16 bg-inverse-surface rounded-full shadow-[0_10px_30px_rgba(23,23,23,0.18)] flex items-center justify-between px-4 relative" data-active-classes="text-surface-bright font-label-md"><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="alarms" href="#"><span class="material-symbols-outlined text-[22px]">alarm</span><span class="font-label-sm text-label-sm mt-0.5">Alarms</span></a><div class="relative flex items-center justify-center"><a aria-label="Create new entry" class="w-14 h-14 -mt-6 rounded-full bg-primary-container text-inverse-surface flex items-center justify-center shadow-[0_8px_20px_rgba(245,172,215,0.45)] hover:scale-105 active:scale-95 transition-transform" data-path="new-entry" href="#"><span class="material-symbols-outlined text-[28px] font-bold">add</span></a></div><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="tasks" href="#"><span class="material-symbols-outlined text-[22px]">check_circle</span><span class="font-label-sm text-label-sm mt-0.5">Tasks</span></a><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="chats" href="#"><span class="material-symbols-outlined text-[22px]">chat_bubble</span><span class="font-label-sm text-label-sm mt-0.5">Chats</span></a></nav></div>
+
+
+
+</body></html>

@@ -1,0 +1,6 @@
+{
+  "name": "OneReflection",
+  "description": "Voice-first social productivity, trusted voice alarms, bedtime harmony sync, and mindful habit tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

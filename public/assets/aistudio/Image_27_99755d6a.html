@@ -1,0 +1,414 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-container": "#f9df72", "surface-container-lowest": "#ffffff", "outline": "#82737a", "tertiary-fixed": "#dae2ff", "surface-tint": "#864b70", "on-secondary-container": "#736200", "on-tertiary-fixed": "#091a3e", "surface-bright": "#fcf9f8", "secondary-fixed-dim": "#dfc65c", "inverse-primary": "#fab0dc", "surface-dim": "#dcd9d9", "surface": "#fcf9f8", "outline-variant": "#d4c2c9", "on-primary": "#ffffff", "on-primary-fixed-variant": "#6b3358", "inverse-on-surface": "#f3f0ef", "primary-fixed-dim": "#fab0dc", "primary": "#864b70", "on-surface": "#1c1b1b", "surface-container-high": "#eae7e7", "on-secondary": "#ffffff", "background": "#fcf9f8", "on-secondary-fixed": "#221b00", "surface-container-highest": "#e5e2e1", "primary-fixed": "#ffd8ec", "on-tertiary-fixed-variant": "#38466c", "inverse-surface": "#313030", "on-primary-fixed": "#37062a", "primary-container": "#f5acd7", "surface-container": "#f0eded", "on-primary-container": "#753c61", "on-tertiary-container": "#414e76", "on-error-container": "#93000a", "on-background": "#1c1b1b", "on-surface-variant": "#50434a", "on-secondary-fixed-variant": "#534600", "surface-variant": "#e5e2e1", "tertiary-container": "#b3c1ef", "surface-container-low": "#f6f3f2", "secondary": "#6f5d00", "secondary-fixed": "#fce275", "error-container": "#ffdad6", "on-error": "#ffffff", "tertiary": "#4f5d85", "tertiary-fixed-dim": "#b7c5f3", "error": "#ba1a1a", "on-tertiary": "#ffffff" }, borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, spacing: { "space-md": "1rem", "space-xs": "0.25rem", "margin-mobile": "1rem", "margin": "1.25rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "gutter-mobile": "0.75rem", "gutter": "1rem", "space-xl": "2rem" }, fontFamily: { "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Space Grotesk"], "display-lg-mobile": ["Space Grotesk"], "label-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "display-lg": ["Space Grotesk"], "title-md": ["Plus Jakarta Sans"], "headline-lg": ["Space Grotesk"], "headline-sm": ["Space Grotesk"] }, fontSize: { "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "headline-md": ["24px", { lineHeight: "30px", fontWeight: "600" }], "display-lg-mobile": ["36px", { lineHeight: "44px", fontWeight: "700" }], "label-lg": ["14px", { lineHeight: "18px", fontWeight: "600" }], "label-sm": ["10px", { lineHeight: "12px", fontWeight: "700" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "display-lg": ["44px", { lineHeight: "52px", fontWeight: "700" }], "title-md": ["18px", { lineHeight: "24px", fontWeight: "600" }], "headline-lg": ["32px", { lineHeight: "38px", fontWeight: "700" }], "headline-sm": ["20px", { lineHeight: "26px", fontWeight: "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="OneReflection Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1y8HYQaA6N1SwUPvYCCEhBLis0lRFIr5w9iFFie-aodnq9vebO21UNsin812dB8Ze8ARDbQDmpgfTd5cVl8vs-Bz5rVetRfVkRcEJUWOE8i86HD3NIpBA3f2qlf1RiZfgkKnRVIlzV8ei4vybU1Zh_e-VdI_TZOZaKQUETJwYIX9qJHKlp1Z4WFujEUeP2ATnMIT5cjJQagElslNnNinyHtOmyh7JP-45ICM9y37-JixYVBta8-eh"><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">OneReflection</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Home</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Notifications" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><a aria-label="User Profile" class="w-11 h-11 flex items-center justify-center rounded-full hover:opacity-90 transition-opacity" data-path="profile-settings" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBE7jpIocCISc-CQYfgAnahVZmLt7VB9UJKlTFKJX9JEBM0KeqWHrnY0EOlX7Xr016w-StCO-DfHViu0fGfhqLc5xXymxW-Idb1KIskGYbnQtfZt9R24CzmTiiG97t1oqT6BRybyaDZrINztAvlimWlhHUhwdR_IyfwE_j6uA1V6l9K1-IiXMA6jRa5-JRXxNhlmHpahWf3zorVKk7seurAn3RnMPBzb_UQpUlVYYBvZMwd1oKmMCq0"></a></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full px-margin pb-6 gap-space-lg">
+<!-- Top Editorial Header & Trust Eyebrow -->
+<div class="flex flex-col gap-space-xs pt-2">
+<div class="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm shadow-sm rotate-[-1deg]">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="">TRUSTED CIRCLE • SAFE SYNC</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">
+      Better together.
+    </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs">
+      Invite your closest souls, share playful voice wake-ups, and sync daily habits in warm harmony.
+    </p>
+</div>
+<!-- Hero Bento Card: Personal Invite & Stylized QR Code -->
+<div class="relative overflow-hidden rounded-lg bg-primary-container p-5 text-on-surface shadow-md">
+<!-- Playful Background Deco Shapes (Pastel Bento & Sticker Tactility) -->
+<div class="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-secondary-container opacity-70 pointer-events-none"></div>
+<div class="absolute -bottom-6 -left-6 w-28 h-28 rounded-3xl rotate-12 bg-tertiary-container opacity-60 pointer-events-none"></div>
+<div class="relative z-10 flex flex-col items-center text-center gap-space-md">
+<!-- Organic Badge / Stamp -->
+<div class="flex items-center justify-between w-full">
+<span class="px-2.5 py-1 rounded-full bg-surface-bright/90 text-on-surface font-label-sm text-label-sm">
+          Your Sync Key
+        </span>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-surface shadow-sm rotate-6">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+</div>
+</div>
+<!-- Stylized Scannable QR Component -->
+<div class="p-3 bg-surface-container-lowest rounded-2xl shadow-sm flex flex-col items-center justify-center relative">
+<div class="relative w-40 h-40 flex items-center justify-center bg-surface-container-low rounded-xl p-2">
+<!-- Stylized Mock QR SVG -->
+<svg class="w-full h-full text-on-surface" fill="currentColor" viewBox="0 0 160 160">
+<!-- QR Corner Targets -->
+<rect fill="currentColor" fill-opacity="0.9" height="40" rx="8" width="40" x="10" y="10"></rect>
+<rect fill="#ffffff" height="24" rx="4" width="24" x="18" y="18"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="24" y="24"></rect>
+<rect fill="currentColor" fill-opacity="0.9" height="40" rx="8" width="40" x="110" y="10"></rect>
+<rect fill="#ffffff" height="24" rx="4" width="24" x="118" y="18"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="124" y="24"></rect>
+<rect fill="currentColor" fill-opacity="0.9" height="40" rx="8" width="40" x="10" y="110"></rect>
+<rect fill="#ffffff" height="24" rx="4" width="24" x="18" y="118"></rect>
+<rect fill="currentColor" height="12" rx="2" width="12" x="24" y="124"></rect>
+<!-- Pattern Blocks -->
+<circle cx="68" cy="22" fill="currentColor" r="5"></circle>
+<circle cx="88" cy="22" fill="currentColor" r="4"></circle>
+<circle cx="78" cy="38" fill="currentColor" r="6"></circle>
+<rect fill="currentColor" height="10" rx="3" width="10" x="62" y="52"></rect>
+<rect fill="currentColor" height="8" rx="2" width="12" x="86" y="54"></rect>
+<circle cx="28" cy="74" fill="currentColor" r="5"></circle>
+<circle cx="46" cy="82" fill="currentColor" r="6"></circle>
+<rect fill="currentColor" height="8" rx="2" width="14" x="18" y="90"></rect>
+<circle cx="120" cy="68" fill="currentColor" r="5"></circle>
+<circle cx="138" cy="80" fill="currentColor" r="6"></circle>
+<rect fill="currentColor" height="10" rx="2" width="12" x="112" y="92"></rect>
+<circle cx="66" cy="116" fill="currentColor" r="6"></circle>
+<circle cx="86" cy="120" fill="currentColor" r="4"></circle>
+<rect fill="currentColor" height="12" rx="3" width="18" x="70" y="132"></rect>
+<circle cx="120" cy="124" fill="currentColor" r="5"></circle>
+<circle cx="136" cy="138" fill="currentColor" r="6"></circle>
+</svg>
+<!-- Center Emblem / Avatar -->
+<div class="absolute inset-0 m-auto w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[20px] text-on-surface" style="font-variation-settings: 'FILL' 1;">sensors</span>
+</div>
+</div>
+<div class="mt-2 text-label-sm font-label-sm text-on-surface-variant tracking-wider uppercase">
+          Scan to Sync
+        </div>
+</div>
+<!-- Unique Invite Code Pill -->
+<div class="w-full flex flex-col items-center gap-space-xs">
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-bright/80 shadow-inner">
+<span class="font-headline-sm text-label-lg font-bold tracking-widest text-on-surface">
+            REFLECTION-MY-8924
+          </span>
+<button class="w-6 h-6 rounded-full bg-inverse-surface text-surface-bright flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" id="copy-btn" title="Copy code">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+</div>
+<span class="text-label-sm font-label-sm text-on-primary-container h-3 transition-opacity opacity-0" id="copy-status">Code copied to clipboard!</span>
+</div>
+<!-- Action Buttons Row -->
+<div class="grid grid-cols-2 gap-space-sm w-full mt-1">
+<button class="h-12 px-4 rounded-full bg-inverse-surface text-surface-bright font-label-lg text-label-lg flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span class="">Share Link</span>
+</button>
+<button class="h-12 px-4 rounded-full bg-surface-bright text-on-surface font-label-lg text-label-lg flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+<span class="">Scan Friend</span>
+</button>
+</div>
+<!-- Footnote Disclaimer -->
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-bright/60 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">security</span>
+<span class="">Alarms &amp; voice notes require explicit mutual consent.</span>
+</div>
+</div>
+</div>
+<!-- Quick Connection Methods (Horizontal Chips) -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 -mx-margin px-margin">
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md whitespace-nowrap active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px] text-tertiary">chat</span>
+<span class="">Message Invite</span>
+</button>
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md whitespace-nowrap active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px] text-primary">contactless</span>
+<span class="">NFC Touch Beam</span>
+</button>
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-surface-container-high text-on-surface font-label-md text-label-md whitespace-nowrap active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px] text-secondary">contacts</span>
+<span class="">From Address Book</span>
+</button>
+</div>
+<!-- Pending Connection Requests Section -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Pending Requests</h2>
+<span class="w-5 h-5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm flex items-center justify-center font-bold">1</span>
+</div>
+<button class="font-label-md text-label-md text-primary hover:underline">Clear all</button>
+</div>
+<!-- Request Card -->
+<div class="p-4 rounded-lg bg-surface-container-low shadow-sm flex flex-col gap-space-sm transition-all hover:bg-surface-container">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Julian Vance" class="w-12 h-12 rounded-full object-cover" data-alt="Warm editorial photographic headshot of a friendly creative young man with curly brown hair smiling outdoors in soft natural evening sunlight with muted pastel background tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN5h9TUMk_VMBTMpj2hNHoB-7u_oOrQD9A6FT6dUJ9Qdpu1w4ofRom-WUGLpJHCDf3UDIYKFOV1_Y2NEIBSSkKCDUA2oIDxg-hympMOgW1BxGhJjf5CW9SX5L-GcmuA6V5mMRr86PlcKekPLpcCMQGGcP7LbeghQih9LQkpPUhZ8jxG_vtqhRBdgIOfxs8Y3cWGTuXLTaLs7b7uKFba2k9GwMwTXdhkWOrNOxTaPgjCeOys5dKPTP4">
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-secondary-container flex items-center justify-center text-[8px] text-on-surface font-bold">✨</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Julian Vance</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">@julianv</span>
+</div>
+<div class="flex items-center gap-1 text-label-sm font-label-sm text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-tertiary">hub</span>
+<span class="">Connected with Leo Chen</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-10 rounded-full bg-inverse-surface text-surface-bright font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span class="">Accept &amp; Sync</span>
+</button>
+<button class="h-10 px-4 rounded-full bg-surface-container-highest text-on-surface-variant font-label-md text-label-md flex items-center justify-center active:scale-95 transition-transform">
+          Dismiss
+        </button>
+</div>
+</div>
+</div>
+<!-- "Your Inner Circle" Section -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Your Inner Circle</h2>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-sm font-label-sm">3 active souls</span>
+</div>
+<button class="text-label-md font-label-md text-on-surface-variant flex items-center gap-0.5">
+<span class="">Sort by sync</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<!-- Connection Card 1: Maya R. (Partner • Deep Sync) in Butter Yellow Bento -->
+<div class="rounded-lg bg-secondary-container p-4 text-on-surface shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<!-- Tactile Starburst Stamp -->
+<div class="absolute -right-2 -bottom-2 w-14 h-14 rounded-full bg-secondary-fixed-dim/40 flex items-center justify-center pointer-events-none rotate-12">
+<span class="material-symbols-outlined text-secondary text-[24px]">bedtime</span>
+</div>
+<!-- Header: Identity & Presence -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Maya R." class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Candid film-style portrait of a serene young woman with hair swept back, warm golden-hour rim lighting, candid friendly expression, minimal natural aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZVal3qyYDMLV2rrXmcJY8vXw9BWpNNmWYKDd_XrSvqVO5yeLqE5KKKbgG5iBRuuA4N_AjwCs0AYExhFATL-_TLpgNXHToGu-G4Mz_EZls-ypfkfWNe98Unc5VFyGEKn-yQSkaKLr9fMYUe5-esOLOpb5MEyqMGuuprZRd86wTRkPhzUBTRsBhznOHA4mK9JcE5GLa1j3Zjkgvo7l5yAeJt0Vo6XtcLXE9hRo9Aab73iN4n3lrueTw">
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm" title="Online &amp; Awake"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-on-surface">Maya R.</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-bright/80 font-label-sm text-label-sm text-on-secondary-container font-semibold">Partner • Deep Sync</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-on-secondary-container">alarm_on</span>
+<span class="">Awake &amp; synced at 06:45 AM</span>
+</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-bright/60 flex items-center justify-center hover:bg-surface-bright transition-colors" title="Settings">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Granular Permissions Grid (White Pill Containers) -->
+<div class="flex flex-col gap-1.5 mt-1">
+<!-- Voice Wake-up Permission -->
+<div class="flex items-center justify-between p-2.5 rounded-2xl bg-surface-bright/90 shadow-sm">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">mic</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Voice Alarms</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Allowed to schedule morning wake-ups</span>
+</div>
+</div>
+<button class="w-6 h-6 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shadow-inner" title="Active permission">
+<span class="material-symbols-outlined text-[15px] font-bold">check</span>
+</button>
+</div>
+<!-- Shared Tasks & Rituals -->
+<div class="flex items-center justify-between p-2.5 rounded-2xl bg-surface-bright/90 shadow-sm">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">checklist</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Shared Habits &amp; Tasks</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Full dual-habit tracking enabled</span>
+</div>
+</div>
+<button class="w-6 h-6 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shadow-inner" title="Active permission">
+<span class="material-symbols-outlined text-[15px] font-bold">check</span>
+</button>
+</div>
+<!-- Gentle Habit Pings -->
+<div class="flex items-center justify-between p-2.5 rounded-2xl bg-surface-bright/90 shadow-sm">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[15px]">notifications_active</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Rhythm Pings</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Gentle daytime nudge sounds</span>
+</div>
+</div>
+<button class="w-6 h-6 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shadow-inner" title="Active permission">
+<span class="material-symbols-outlined text-[15px] font-bold">check</span>
+</button>
+</div>
+</div>
+<!-- Quick Action Buttons for Maya -->
+<div class="grid grid-cols-2 gap-space-xs mt-1">
+<button class="h-10 px-3 rounded-full bg-inverse-surface text-surface-bright font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-[16px]">record_voice_over</span>
+<span class="">Voice Ping</span>
+</button>
+<button class="h-10 px-3 rounded-full bg-surface-bright text-on-surface font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span class="">Manage Access</span>
+</button>
+</div>
+</div>
+<!-- Connection Card 2: Leo Chen (Studio Co-founder) in Lavender Blue Bento -->
+<div class="rounded-lg bg-tertiary-container p-4 text-on-surface shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Leo Chen" class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Portrait photo of an Asian male designer with rounded spectacles and minimalist linen shirt smiling calmly against soft pastel lilac studio backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu6fWhifrYPzLEqBnQPnjaQFoIh_RRW4vIk840Awmy-lhjJuM8YBI9xBoZh-Q8xllJXs-tb61n1OL5i44OJLA3hevLjvH1rlzfE1qeeSz3q9YooBpnmRBRiIBwp3oCAycsNV4qWWcf9IP_D9liaa13sPQjS7Ofbhiu-kSANhf3JF6Y1kNCOdjLl4VxGJRBVn1Pwlf5Ki7h41TlRdg4wOWqELVVyNZau81gzLDYesNjJHO1Jt9YvKx5">
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-surface-container-highest" title="Offline / Focus mode"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-on-surface">Leo Chen</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-bright/80 font-label-sm text-label-sm text-on-tertiary-container font-semibold">Studio Sprint</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-tertiary">do_not_disturb_on</span>
+<span class="">Focus Session • 45m left</span>
+</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-bright/60 flex items-center justify-center hover:bg-surface-bright transition-colors" title="Settings">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Permission Summary Pill Row -->
+<div class="flex flex-wrap items-center gap-1.5 mt-1">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-bright/90 text-label-sm font-label-sm text-on-surface shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
+<span class="">Tasks &amp; Milestones</span>
+</span>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-bright/90 text-label-sm font-label-sm text-on-surface shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
+<span class="">Sprint Alerts</span>
+</span>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-bright/60 text-label-sm font-label-sm text-on-surface-variant shadow-sm line-through">
+<span class="material-symbols-outlined text-[14px] text-outline">block</span>
+<span class="">Alarms Off</span>
+</span>
+</div>
+<!-- Quick Actions -->
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-9 rounded-full bg-inverse-surface text-surface-bright font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-[15px]">send</span>
+<span class="">Sync Habit</span>
+</button>
+<button class="h-9 px-3.5 rounded-full bg-surface-bright text-on-surface font-label-md text-label-md flex items-center justify-center active:scale-95 transition-transform shadow-sm">
+          Permissions
+        </button>
+</div>
+</div>
+<!-- Connection Card 3: Sofia Miller (Mindful Rhythm Buddy) in Soft Matcha Green Bento -->
+<div class="rounded-lg bg-surface-container-high p-4 text-on-surface shadow-sm flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Sofia Miller" class="w-12 h-12 rounded-full object-cover shadow-sm" data-alt="Playful close-up portrait of a woman laughing happily with natural daylight, soft bokeh background in botanical soft sage greens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBefIt0GPlW9XrHdIJZPO9c2fkVM1EeFS2JDsR25XWA_X5qvwMAlHlzVXM8bg6xyG4PdJcenx7gHpjq9jqXqJzGy1REPVj8ehsKRKymMp5yqVOsZrmbTTYrTgMTzTNKVj_bzxQso-xRVmqIAJmH68Uo0Hr2uzitNubt67bdZoO61nVuMMebwgkeUbVZ5fv0Frv6iSiBWvt81WjTaEBjtkf0kq3grOxTZXFN33JyEZYCmiPX6Zrf3ig7">
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm" title="Active"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-on-surface">Sofia Miller</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-bright/80 font-label-sm text-label-sm text-on-surface-variant font-semibold">Mindful Rhythm</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">spa</span>
+<span class="">Completed Hydration Streak (7d)</span>
+</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-bright/60 flex items-center justify-center hover:bg-surface-bright transition-colors" title="Settings">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Permission Summary -->
+<div class="flex flex-wrap items-center gap-1.5 mt-1">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-bright text-label-sm font-label-sm text-on-surface shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
+<span class="">Cheer Pings</span>
+</span>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-bright text-label-sm font-label-sm text-on-surface shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
+<span class="">Hydration Buddy</span>
+</span>
+</div>
+<!-- Quick Actions -->
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 h-9 rounded-full bg-inverse-surface text-surface-bright font-label-md text-label-md flex items-center justify-center gap-1 active:scale-95 transition-transform shadow-sm">
+<span class="material-symbols-outlined text-[15px]">celebration</span>
+<span class="">Send High Five</span>
+</button>
+<button class="h-9 px-3.5 rounded-full bg-surface-bright text-on-surface font-label-md text-label-md flex items-center justify-center active:scale-95 transition-transform shadow-sm">
+          Adjust
+        </button>
+</div>
+</div>
+</div>
+<!-- End of Inner Circle / Safe Guard Footer Note -->
+<div class="p-4 rounded-2xl bg-surface-container-low text-center flex flex-col items-center gap-1 text-on-surface-variant">
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-primary">
+<span class="material-symbols-outlined text-[16px]">lock_reset</span>
+<span class="">End-to-end encrypted reflection mesh</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs">
+      You are always in complete control. Revoke any voice alarm or habit access instantly from any card.
+    </p>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for the invite code copy button
+  const copyBtn = document.getElementById('copy-btn');
+  const copyStatus = document.getElementById('copy-status');
+  if (copyBtn && copyStatus) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard?.writeText('REFLECTION-MY-8924').catch(() => {});
+      copyStatus.classList.remove('opacity-0');
+      copyStatus.classList.add('opacity-100');
+      setTimeout(() => {
+        copyStatus.classList.remove('opacity-100');
+        copyStatus.classList.add('opacity-0');
+      }, 2400);
+    });
+  }
+
+  // Active Tab Highlight on Persistent Bottom Shell (ensuring 'people' tab is visually highlighted)
+  try {
+    const nav = document.querySelector('nav');
+    if (nav) {
+      const peopleLink = nav.querySelector('[data-path="people"]');
+      if (peopleLink) {
+        peopleLink.classList.remove('text-surface-container-high/60');
+        peopleLink.classList.add('text-surface-bright', 'font-label-md');
+        // Add active dot indicator underneath icon
+        if (!peopleLink.querySelector('.active-dot')) {
+          const dot = document.createElement('div');
+          dot.className = 'active-dot w-1.5 h-1.5 rounded-full bg-primary-container mt-0.5';
+          peopleLink.appendChild(dot);
+        }
+      }
+    }
+  } catch (e) {}
+</script></main><div class="fixed bottom-0 inset-x-0 z-50 pb-safe px-margin pointer-events-none"><nav class="pointer-events-auto mx-auto mb-space-sm max-w-md h-16 bg-[#1f1e24] rounded-full shadow-[0_10px_30px_rgba(23,23,23,0.28)] flex items-center justify-between px-4 relative"><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-[#e5e2e1]/60 hover:text-white transition-colors group" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-[#e5e2e1]/60 hover:text-white transition-colors group" data-path="alarms" href="#"><span class="material-symbols-outlined text-[22px]">alarm</span><span class="font-label-sm text-label-sm mt-0.5">Alarms</span></a><div class="relative flex items-center justify-center"><a aria-label="Create new entry" class="w-14 h-14 -mt-6 rounded-full bg-[#f5acd7] text-[#1c1b1b] flex items-center justify-center shadow-[0_8px_20px_rgba(245,172,215,0.45)] hover:scale-105 active:scale-95 transition-transform" data-path="new-entry" href="#"><span class="material-symbols-outlined text-[28px] font-bold">add</span></a></div><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-[#e5e2e1]/60 hover:text-white transition-colors group" data-path="tasks" href="#"><span class="material-symbols-outlined text-[22px]">check_circle</span><span class="font-label-sm text-label-sm mt-0.5">Tasks</span></a><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-[#f5acd7] font-semibold transition-colors group relative" data-path="people" href="#"><span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">group</span><span class="font-label-sm text-label-sm mt-0.5 text-white">Circle</span><div class="w-1.5 h-1.5 rounded-full bg-[#f5acd7] mt-0.5 shadow-sm"></div></a></nav></div>
+
+</body></html>

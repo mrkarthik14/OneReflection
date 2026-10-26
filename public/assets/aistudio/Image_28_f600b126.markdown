@@ -1,0 +1,237 @@
+---
+name: Playful Editorial Bento
+colors:
+  surface: '#fcf9f8'
+  surface-dim: '#dcd9d9'
+  surface-bright: '#fcf9f8'
+  surface-container-lowest: '#ffffff'
+  surface-container-low: '#f6f3f2'
+  surface-container: '#f0eded'
+  surface-container-high: '#eae7e7'
+  surface-container-highest: '#e5e2e1'
+  on-surface: '#1c1b1b'
+  on-surface-variant: '#50434a'
+  inverse-surface: '#313030'
+  inverse-on-surface: '#f3f0ef'
+  outline: '#82737a'
+  outline-variant: '#d4c2c9'
+  surface-tint: '#864b70'
+  primary: '#864b70'
+  on-primary: '#ffffff'
+  primary-container: '#f5acd7'
+  on-primary-container: '#753c61'
+  inverse-primary: '#fab0dc'
+  secondary: '#6f5d00'
+  on-secondary: '#ffffff'
+  secondary-container: '#f9df72'
+  on-secondary-container: '#736200'
+  tertiary: '#4f5d85'
+  on-tertiary: '#ffffff'
+  tertiary-container: '#b3c1ef'
+  on-tertiary-container: '#414e76'
+  error: '#ba1a1a'
+  on-error: '#ffffff'
+  error-container: '#ffdad6'
+  on-error-container: '#93000a'
+  primary-fixed: '#ffd8ec'
+  primary-fixed-dim: '#fab0dc'
+  on-primary-fixed: '#37062a'
+  on-primary-fixed-variant: '#6b3358'
+  secondary-fixed: '#fce275'
+  secondary-fixed-dim: '#dfc65c'
+  on-secondary-fixed: '#221b00'
+  on-secondary-fixed-variant: '#534600'
+  tertiary-fixed: '#dae2ff'
+  tertiary-fixed-dim: '#b7c5f3'
+  on-tertiary-fixed: '#091a3e'
+  on-tertiary-fixed-variant: '#38466c'
+  background: '#fcf9f8'
+  on-background: '#1c1b1b'
+  surface-variant: '#e5e2e1'
+typography:
+  display-lg:
+    fontFamily: Space Grotesk
+    fontSize: 44px
+    fontWeight: '700'
+    lineHeight: 52px
+  display-lg-mobile:
+    fontFamily: Space Grotesk
+    fontSize: 36px
+    fontWeight: '700'
+    lineHeight: 44px
+  headline-lg:
+    fontFamily: Space Grotesk
+    fontSize: 32px
+    fontWeight: '700'
+    lineHeight: 38px
+  headline-md:
+    fontFamily: Space Grotesk
+    fontSize: 24px
+    fontWeight: '600'
+    lineHeight: 30px
+  headline-sm:
+    fontFamily: Space Grotesk
+    fontSize: 20px
+    fontWeight: '600'
+    lineHeight: 26px
+  title-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 18px
+    fontWeight: '600'
+    lineHeight: 24px
+  body-lg:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 16px
+    fontWeight: '500'
+    lineHeight: 24px
+  body-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+  body-sm:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 12px
+    fontWeight: '400'
+    lineHeight: 16px
+  label-lg:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 14px
+    fontWeight: '600'
+    lineHeight: 18px
+  label-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 12px
+    fontWeight: '600'
+    lineHeight: 16px
+  label-sm:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 10px
+    fontWeight: '700'
+    lineHeight: 12px
+rounded:
+  sm: 0.5rem
+  DEFAULT: 1rem
+  md: 1.5rem
+  lg: 2rem
+  xl: 3rem
+  full: 9999px
+spacing:
+  gutter: 1rem
+  gutter-mobile: 0.75rem
+  margin: 1.25rem
+  margin-mobile: 1rem
+  space-xs: 0.25rem
+  space-sm: 0.5rem
+  space-md: 1rem
+  space-lg: 1.5rem
+  space-xl: 2rem
+---
+
+## Brand & Style
+
+This design system blends **Playful Editorial Minimalism** with structured **Pastel Bento UI**. Built as an Android-first experience for social productivity and self-care tracking, it merges the tactile friendliness of boutique lifestyle journals with the modular utility of modern productivity suites.
+
+### Brand Personality & Emotional Tone
+- **Warm & Reassuring:** A soft ivory canvas prevents the sterile, clinical feel of standard task managers, instilling calm and mindful reflection.
+- **Expressive & Whimsical:** Organic sticker shapes, multi-pointed starbursts, and asymmetric bento blocks celebrate human individuality and small daily victories.
+- **Crisp & Editorial:** Razor-sharp typography and high-contrast ink blacks (#171717) anchor the cheerful pastels in serious, intentional design hierarchy.
+
+### Design Movement & Influences
+- **Editorial Bento Grid:** Inspired by asymmetric magazine spreads and modular dashboard cards that group content into self-contained, color-coded candy blocks.
+- **Sticker-Book Tactility:** Organic geometric badges (starbursts, scalloped blobs, tilted tags) act as micro-rewards for completed habits and scheduled milestones.
+- **Grounded Contrast:** Floating pill navigation rails, dark button states, and deep black copy provide structural weight against airy pastel surfaces.
+
+## Colors
+
+The palette revolves around a calming **Warm Ivory** base, balanced by pitch-black contrast tokens and a 6-tone pastel spectrum assigned dynamically to categories, habits, and bento cards.
+
+### Core Canvas & Structure
+- **Canvas Base (`#FAF6EC`):** The foundational ivory surface. Used for global page backgrounds, sheet backdrops, and negative space.
+- **Surface Crisp (`#FFFFFF`):** High-clarity white for nested inputs, segmented controls, and secondary popovers.
+- **Text & Contrast Ink (`#171717`):** Deep charcoal/soft black for headlines, actionable pill buttons, floating tab docks, and primary icons.
+- **Muted Ink (`#6E6D68`):** Mid-tone neutral for secondary timestamps, captions, and inactive tab states.
+
+### Pastel Bento Palette
+- **Candy Pink (`#F5ACD7`):** Primary accent. Used for the prominent circular floating action button, health metrics, and urgent highlight cards.
+- **Butter Yellow (`#F9DF72`):** Secondary accent. Used for active focus modules, sun/morning trackers, and grooming badges.
+- **Lavender Blue (`#B7C5F3`):** Tertiary accent. Employed for mental reflection, water balance, and evening sleep logs.
+- **Matcha Green (`#B8E98E`):** Semantic accent for completion statuses, physical activity, and pet medication doses.
+- **Soft Cyan (`#A5E8EF`):** Semantic accent for hydration, quick notes, and environmental reminders.
+- **Lilac (`#E7A2EE`):** Supplemental accent for social events, shared routines, and special milestones.
+
+### Contrast Application Rules
+- All colored cards take `#171717` text and glyphs to guarantee high legibility across all pastels.
+- White text is restricted exclusively to primary dark elements: the black floating pill navigation, dark submission buttons, and dark modal overlays.
+
+## Typography
+
+The type scale combines the technical, geometric personality of **Space Grotesk** with the balanced humanist warmth of **Plus Jakarta Sans**.
+
+### Font Pairing Logic
+- **Space Grotesk (Headlines & Big Metrics):** Features distinct geometric counters and editorial flair. Used for screen titles, category cards, massive stat metrics (e.g., `8.8` score or `123 bpm`), and conversational hero questions.
+- **Plus Jakarta Sans (Body & Micro-UI):** Provides friendly rounded terminals, tall x-height, and optimal reading performance for nested schedule lists, pet instructions, calendar grids, and interactive button chips.
+
+### Editorial Treatments
+- Metric values combine a large `display-lg` numeric string with a micro `label-md` or `label-sm` unit anchored right below or beside it.
+- Title cases remain conversational and editorial (e.g., *"Taigo, how are you feeling today?"* or *"Activities just for your taste"*).
+
+## Layout & Spacing
+
+The layout model is anchored on an 8pt rhythmic grid optimized for one-handed mobile ergonomic usage, supporting tablet bento expansion.
+
+### Grid & Composition
+- **Mobile Grid (Primary Form Factor):** 4-column layout with `1rem` outer margins and `0.75rem` gutters. Cards snap into asymmetric modular bento arrangements (1x1 square widgets, 2x1 full-width highlight cards, and 2x2 tall insight blocks).
+- **Tablet Reflow:** Expands to an 8-column layout with `1.5rem` margins and `1rem` gutters. Bento cards maintain aspect ratios and nest side-by-side rather than stacking vertically.
+- **Safe Area Insets:** Ample bottom padding (`80px` + safe-area-inset) is reserved on all scrollable screens to prevent interactive elements from clashing with the floating navigation pill.
+
+## Elevation & Depth
+
+This system avoids traditional Drop Shadow and Skewed Skeuomorphism in favor of **Tonal Layering**, **Crisp Overlays**, and **Gentle Ambient Floats**.
+
+### Depth Layers
+1. **Base Layer (Level 0):** Warm Ivory (`#FAF6EC`) global screen canvas.
+2. **Bento Surface (Level 1):** Solid pastel card fills (Butter Yellow, Candy Pink, Lavender Blue, Matcha Green) resting completely flat on the canvas without drop shadows. Edge boundaries are delineated cleanly by high-contrast hue shifts.
+3. **Floating Floating Actions & Overlays (Level 2):** Floating navigation bars and modal sheets lift subtly with a tailored soft ambient shadow:
+   - `box-shadow: 0 10px 30px rgba(23, 23, 23, 0.08)`
+4. **Interactive Sticker Accents (Level 3):** Organic badges, circular starbursts, and completion stamps float atop cards with slight rotation transforms (`-3deg` to `+4deg`), reinforcing an tactile paper-cut aesthetic.
+
+## Shapes
+
+The shape philosophy prioritizes generous, friendly curves complemented by asymmetrical bento proportions and expressive organic silhouettes.
+
+### Corner Radius System
+- **Fully Pill-Shaped (`9999px`):** Used universally for action buttons, filter chips, calendar day toggles, and the floating navigation dock.
+- **Super-Rounded Bento (`24px` / `32px`):** Used for large content containers, schedule cards, and modular health trackers.
+- **Mini Bento (`16px`):** Used for nested sub-cards, pill time-slots, and dosage input fields.
+
+### Organic Stickers & Decorative Geometry
+- **Starbursts & Blobs:** 8-point and 12-point softened starburst stamps indicate priority tags (`Top priority today`, `New`).
+- **Scalloped Blobs & Pill Capsules:** Asymmetrical, non-standard geometric silhouettes serve as container chips for habits (e.g., cloud-shaped water tracker, wavy heart pill).
+
+## Components
+
+### 1. Floating Pill Navigation Bar
+- **Shell:** Deep charcoal/black (`#171717`) pill centered at the bottom of the viewport with a fixed height of `64px`, featuring `9999px` corner radius.
+- **Icons:** Inactive states rendered in `#FAF6EC` with `60%` opacity; active state highlighted with an ivory dot indicator underneath.
+- **Center Add Action:** A punch-out or overlapping Candy Pink (`#F5ACD7`) circle (`54px × 54px`) harboring a bold `#171717` plus sign (`+`).
+
+### 2. Bento Cards
+- **Structure:** Corner radius of `24px` to `28px`, filled with pastel tokens (`#F5ACD7`, `#F9DF72`, `#B7C5F3`, `#B8E98E`, `#A5E8EF`, or `#E7A2EE`).
+- **Content Rhythm:** Top left houses category or status badges; center features punchy Space Grotesk statistics or bold task names; bottom contains small metadata labels and interactive toggle pills.
+- **Nested Lists:** When cards present sub-items (e.g., training drills or medical visits), each item rests in a high-contrast pill shape (`#FFFFFF` with `70%` opacity or solid white).
+
+### 3. Buttons & Action Chips
+- **Primary Button:** `#171717` solid pill with `#FAF6EC` text. Height `52px`, `label-lg` font.
+- **Secondary / Ghost Button:** Transparent background with `#171717` text and optional `1.5px` border or soft pastel tint fill.
+- **Quick Action Chips:** Pill-shaped (`36px` height) with soft ivory or pastel backgrounds, paired with leading micro-icons (e.g., pill dosage, water glass, heart icon).
+
+### 4. Checkboxes & Habit Toggles
+- **Habit Check:** Circular toggle (`28px × 28px`). Unchecked state is a clean neutral outline (`1.5px` border in `#171717` or `#6E6D68`). Checked state fills with Butter Yellow (`#F9DF72`) or Matcha Green (`#B8E98E`) with a crisp black checkmark (`✓`).
+
+### 5. Input Fields & Steppers
+- **Fields:** Rounded pill or `16px` squircle containers in `#FFFFFF`, with `14px` Plus Jakarta Sans typography.
+- **Incremental Stepper:** Split pill with circular `-` and `+` buttons flanking a centered bold numeric display.
+
+### 6. Organic Starburst Badges & Habit Stickers
+- Compact vector badges (`32px` to `48px`) styled with playful rotation. Used inside hero widgets to represent overall wellness scores (e.g., sparkling flower or starburst next to score `8.8`).

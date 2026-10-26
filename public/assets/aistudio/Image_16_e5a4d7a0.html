@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-container": "#f9df72", "surface-container-lowest": "#ffffff", "outline": "#82737a", "tertiary-fixed": "#dae2ff", "surface-tint": "#864b70", "on-secondary-container": "#736200", "on-tertiary-fixed": "#091a3e", "surface-bright": "#fcf9f8", "secondary-fixed-dim": "#dfc65c", "inverse-primary": "#fab0dc", "surface-dim": "#dcd9d9", "surface": "#fcf9f8", "outline-variant": "#d4c2c9", "on-primary": "#ffffff", "on-primary-fixed-variant": "#6b3358", "inverse-on-surface": "#f3f0ef", "primary-fixed-dim": "#fab0dc", "primary": "#864b70", "on-surface": "#1c1b1b", "surface-container-high": "#eae7e7", "on-secondary": "#ffffff", "background": "#fcf9f8", "on-secondary-fixed": "#221b00", "surface-container-highest": "#e5e2e1", "primary-fixed": "#ffd8ec", "on-tertiary-fixed-variant": "#38466c", "inverse-surface": "#313030", "on-primary-fixed": "#37062a", "primary-container": "#f5acd7", "surface-container": "#f0eded", "on-primary-container": "#753c61", "on-tertiary-container": "#414e76", "on-error-container": "#93000a", "on-background": "#1c1b1b", "on-surface-variant": "#50434a", "on-secondary-fixed-variant": "#534600", "surface-variant": "#e5e2e1", "tertiary-container": "#b3c1ef", "surface-container-low": "#f6f3f2", "secondary": "#6f5d00", "secondary-fixed": "#fce275", "error-container": "#ffdad6", "on-error": "#ffffff", "tertiary": "#4f5d85", "tertiary-fixed-dim": "#b7c5f3", "error": "#ba1a1a", "on-tertiary": "#ffffff" }, borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, spacing: { "space-md": "1rem", "space-xs": "0.25rem", "margin-mobile": "1rem", "margin": "1.25rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "gutter-mobile": "0.75rem", "gutter": "1rem", "space-xl": "2rem" }, fontFamily: { "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Space Grotesk"], "display-lg-mobile": ["Space Grotesk"], "label-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "display-lg": ["Space Grotesk"], "title-md": ["Plus Jakarta Sans"], "headline-lg": ["Space Grotesk"], "headline-sm": ["Space Grotesk"] }, fontSize: { "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "headline-md": ["24px", { lineHeight: "30px", fontWeight: "600" }], "display-lg-mobile": ["36px", { lineHeight: "44px", fontWeight: "700" }], "label-lg": ["14px", { lineHeight: "18px", fontWeight: "600" }], "label-sm": ["10px", { lineHeight: "12px", fontWeight: "700" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "display-lg": ["44px", { lineHeight: "52px", fontWeight: "700" }], "title-md": ["18px", { lineHeight: "24px", fontWeight: "600" }], "headline-lg": ["32px", { lineHeight: "38px", fontWeight: "700" }], "headline-sm": ["20px", { lineHeight: "26px", fontWeight: "600" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="OneReflection Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1y8HYQaA6N1SwUPvYCCEhBLis0lRFIr5w9iFFie-aodnq9vebO21UNsin812dB8Ze8ARDbQDmpgfTd5cVl8vs-Bz5rVetRfVkRcEJUWOE8i86HD3NIpBA3f2qlf1RiZfgkKnRVIlzV8ei4vybU1Zh_e-VdI_TZOZaKQUETJwYIX9qJHKlp1Z4WFujEUeP2ATnMIT5cjJQagElslNnNinyHtOmyh7JP-45ICM9y37-JixYVBta8-eh"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">OneReflection</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Home</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Notifications" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><a aria-label="User Profile" class="w-11 h-11 flex items-center justify-center rounded-full hover:opacity-90 transition-opacity" data-path="profile-settings" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBE7jpIocCISc-CQYfgAnahVZmLt7VB9UJKlTFKJX9JEBM0KeqWHrnY0EOlX7Xr016w-StCO-DfHViu0fGfhqLc5xXymxW-Idb1KIskGYbnQtfZt9R24CzmTiiG97t1oqT6BRybyaDZrINztAvlimWlhHUhwdR_IyfwE_j6uA1V6l9K1-IiXMA6jRa5-JRXxNhlmHpahWf3zorVKk7seurAn3RnMPBzb_UQpUlVYYBvZMwd1oKmMCq0"/></a></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full relative">
+<!-- Backdrop Blur Layer hinting at Profile screen underneath -->
+<div class="fixed inset-0 bg-inverse-surface/40 backdrop-blur-md z-40 transition-opacity duration-300 pointer-events-none"></div>
+<!-- Bottom Sheet Container -->
+<div class="relative z-50 flex flex-col w-full bg-surface rounded-t-xl shadow-[0_-12px_40px_rgba(28,27,27,0.18)] pb-safe overflow-hidden">
+<!-- Top Pull Bar & Sheet Dismiss Area -->
+<div class="w-full flex items-center justify-center pt-space-sm pb-space-xs">
+<div class="w-12 h-1.5 bg-outline-variant/60 rounded-full"></div>
+</div>
+<!-- Modal Header Section -->
+<div class="px-margin pt-space-xs pb-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between gap-space-sm">
+<!-- Sticker Status Badge -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full shadow-sm rotate-[-1deg]">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">bedtime</span>
+<span class="font-label-sm text-label-sm tracking-wide uppercase font-bold">Bedtime Harmony • Mutual Rest</span>
+</div>
+<!-- Circular Close Button -->
+<button aria-label="Close modal" class="w-9 h-9 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center hover:bg-surface-container-highest transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+          Quiet Hours &amp; Bedtime Sync.
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Protect your restorative sleep while keeping delicate audio bridges open for those who matter most.
+        </p>
+</div>
+</div>
+<!-- Main Scrollable Body Content -->
+<div class="px-margin flex flex-col gap-space-lg pb-space-xl">
+<!-- Bento 1: Global Sleep Schedule Bento (Candy Pink & Butter Yellow accents) -->
+<section class="bg-primary-container/30 rounded-lg p-space-md flex flex-col gap-space-md relative overflow-hidden">
+<!-- Playful Background Decorative Starburst -->
+<svg class="absolute -right-8 -top-8 w-28 h-28 text-primary-container/40 pointer-events-none rotate-12" fill="currentColor" viewbox="0 0 100 100">
+<path d="M50 0 L58 35 L93 25 L68 50 L93 75 L58 65 L50 100 L42 65 L7 75 L32 50 L7 25 L42 35 Z"></path>
+</svg>
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-primary-container font-bold uppercase tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span> Global Rest Horizon
+          </span>
+<div class="px-2.5 py-0.5 rounded-full bg-surface-container-lowest/80 text-on-surface font-label-sm text-label-sm font-semibold shadow-sm">
+            Auto-Adaptive
+          </div>
+</div>
+<!-- Dual Time Steppers -->
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Stepper 1: Bedtime Silence -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-space-sm flex flex-col gap-space-xs shadow-sm">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">nights_stay</span>
+<span class="font-label-sm text-label-sm font-semibold">Bedtime Silence</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight" id="bedtime-val">22:30</span>
+<div class="flex items-center gap-1 bg-surface-container-low rounded-full p-0.5">
+<button aria-label="Decrease bedtime" class="w-6 h-6 rounded-full flex items-center justify-center bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-bold text-xs active:scale-90 transition-transform" onclick="adjustTime('bedtime-val', -15)">
+                  -
+                </button>
+<button aria-label="Increase bedtime" class="w-6 h-6 rounded-full flex items-center justify-center bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-bold text-xs active:scale-90 transition-transform" onclick="adjustTime('bedtime-val', 15)">
+                  +
+                </button>
+</div>
+</div>
+</div>
+<!-- Stepper 2: Wake Horizon -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-space-sm flex flex-col gap-space-xs shadow-sm">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">wb_twilight</span>
+<span class="font-label-sm text-label-sm font-semibold">Wake Horizon</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight" id="wake-val">07:00</span>
+<div class="flex items-center gap-1 bg-surface-container-low rounded-full p-0.5">
+<button aria-label="Decrease wake time" class="w-6 h-6 rounded-full flex items-center justify-center bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-bold text-xs active:scale-90 transition-transform" onclick="adjustTime('wake-val', -15)">
+                  -
+                </button>
+<button aria-label="Increase wake time" class="w-6 h-6 rounded-full flex items-center justify-center bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-bold text-xs active:scale-90 transition-transform" onclick="adjustTime('wake-val', 15)">
+                  +
+                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Duration Badge -->
+<div class="flex items-center gap-2 px-3 py-2 bg-secondary-container/40 rounded-DEFAULT text-on-secondary-container">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">spa</span>
+<span class="font-label-md text-label-md">8h 30m uninterrupted peace • Gentle fade swells active</span>
+</div>
+<!-- Mutual Sync Toggle Card -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-lowest rounded-DEFAULT shadow-sm">
+<div class="flex items-center gap- space-sm">
+<div class="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px]">sync</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Sync Sleep State with Maya</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Calibrates quiet hours when either partner doses off</span>
+</div>
+</div>
+<!-- Toggle Component -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</section>
+<!-- Bento 2: CORE FEATURE - Granular Partner Exceptions per Circle Member -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Circle Member Breakthroughs</h2>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold uppercase tracking-wider rotate-[1deg]">
+              Granular Rules
+            </span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Specify exactly who can break through quiet hours, what audio format is allowed, and under what conditions.
+        </p>
+<!-- Member 1: Maya R. (Partner • Deep Sync) - Butter Yellow / Ivory Card -->
+<div class="bg-secondary-container/20 rounded-lg p-space-md flex flex-col gap-space-sm">
+<!-- Member Header -->
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<img class="w-11 h-11 rounded-full object-cover shadow-sm" data-alt="Warm natural candid portrait photograph of a young woman with a cozy warm knit sweater smiling softly in ambient bedroom daylight aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRsupnMzv0qvfLpekM7uRam2qeGDCLcZo82-7t4h7Oen0HONHtyAyM3s7aXI33EHSupWC-8ucD4S-_1UxwF5XoLNtTWnxPy0_HIykg6_cJkbalqQbgydv2oP8FHvarEDJF1okPtu0wlNQBCqKPavHYuC1BrOA1DJYMXt8kUHraZkrc-nYIQA0l431dQ5DQJvBcF64zdVaSorF3NbHkp6XGuFcN0--IoA-7HrXSfwE5E8XsCh9Zw6Bz"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-secondary-container flex items-center justify-center shadow-xs">
+<span class="w-2 h-2 rounded-full bg-on-secondary-container"></span>
+</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface font-bold">Maya R.</span>
+<span class="px-2 py-0.2 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-semibold">Primary Partner</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Awake &amp; Synced via Oura Loop
+                </span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[22px]">favorite</span>
+</div>
+<!-- Controls Stack -->
+<div class="flex flex-col gap-2 pt-1">
+<!-- Control Item: Emergency Breakthrough -->
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs">
+<div class="flex flex-col pr-2">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Emergency Breakthrough</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Bypass silence with high-priority chime</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary-container peer-checked:after:bg-on-secondary-container"></div>
+</label>
+</div>
+<!-- Control Item: Gentle Voice Whispers -->
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs">
+<div class="flex flex-col pr-2">
+<div class="flex items-center gap-1">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Gentle Voice Whispers</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm">Until 23:30</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Soft fade-in audio capped at 20% max volume</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary-container peer-checked:after:bg-on-secondary-container"></div>
+</label>
+</div>
+<!-- Control Item: Wake-Up Audio Schedule -->
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs">
+<div class="flex flex-col pr-2">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Wake-Up Audio Queue</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Can plant warm morning greetings for 07:00</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary-container peer-checked:after:bg-on-secondary-container"></div>
+</label>
+</div>
+<!-- Control Item: Urgency Threshold Segmented Pills -->
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex flex-col gap-1.5 shadow-xs">
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">Breakthrough Sensitivity Threshold</span>
+<div class="grid grid-cols-3 gap-1 bg-surface-container-low p-1 rounded-full">
+<button class="py-1 px-2 rounded-full font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface text-center transition-colors">
+                  Critical Only
+                </button>
+<button class="py-1 px-2 rounded-full font-label-sm text-label-sm bg-inverse-surface text-inverse-on-surface font-bold text-center shadow-xs">
+                  Gentle Check-ins
+                </button>
+<button class="py-1 px-2 rounded-full font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface text-center transition-colors">
+                  All Alarms
+                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Member 2: Leo Chen (Sprint & Studio Co-worker) - Lavender Blue Card -->
+<div class="bg-tertiary-fixed/30 rounded-lg p-space-md flex flex-col gap-space-sm">
+<!-- Member Header -->
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<img class="w-11 h-11 rounded-full object-cover shadow-sm" data-alt="Clean minimal portrait of an Asian creative director with round spectacles against clean editorial studio wall in soft modern diffused light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtJedV22_Il43RNJVIS_9LdHP1k3xOU-wx-xOXSISwNSKaQ71hBDrXZeoPE6OZdS3y4gUw78MGf90L04Ys6-EIjNkwiPU1K9SnsqBS6Kr-RUwkAh4loavXEzIjzaQAzLJJOoYLd9u1v-UV5b4c2NJolKRMNXBGRu2AmeexPGUktdGdilZJvpdrP22wT0_KdzGns5Y1kMcAUMpFbpsn_iUNEqGsaVCsxBK4cCIk_2nMSoB01BrDw1FU"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-tertiary flex items-center justify-center shadow-xs">
+<span class="w-2 h-2 rounded-full bg-on-tertiary"></span>
+</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface font-bold">Leo Chen</span>
+<span class="px-2 py-0.2 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">Studio Co-founder</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Design Sprint &amp; Releases</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[22px]">work</span>
+</div>
+<!-- Controls Stack -->
+<div class="flex flex-col gap-2 pt-1">
+<!-- Control: Emergency Work Breakthrough -->
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs">
+<div class="flex flex-col pr-2">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Emergency Breakthrough</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Requires double-ping verification within 2 mins</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary peer-checked:after:bg-on-tertiary"></div>
+</label>
+</div>
+<!-- Control: Voice Notes Locked -->
+<div class="bg-surface-container-lowest/80 p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs opacity-90">
+<div class="flex flex-col pr-2">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Voice Notes &amp; Chat Audio</span>
+<span class="material-symbols-outlined text-[16px] text-outline">lock</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Held silently in holding bay until 07:00</span>
+</div>
+<div class="px-3 py-1 bg-surface-container-high rounded-full font-label-sm text-label-sm text-on-surface font-bold">
+                LOCKED
+              </div>
+</div>
+<!-- Control: Task Milestone Alerts -->
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs">
+<div class="flex flex-col pr-2">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Sprint Milestone Badges</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Muted during quiet hours</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-tertiary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Member 3: Family Hub (Parents & Siblings) - Soft Matcha Green Card -->
+<div class="bg-surface-container-low rounded-lg p-space-md flex flex-col gap-space-sm">
+<!-- Member Header -->
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-space-sm">
+<div class="w-11 h-11 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[24px]">diversity_1</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-on-surface font-bold">Family Circle</span>
+<span class="px-2 py-0.2 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">3 Members</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mom, David, &amp; Claire</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[22px]">home_pin</span>
+</div>
+<!-- Controls Stack -->
+<div class="flex flex-col gap-2 pt-1">
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs">
+<div class="flex flex-col pr-2">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Urgent Breakthrough Calls</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Rings soft Tibetan bowl chime 3x gently</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary peer-checked:after:bg-on-secondary"></div>
+</label>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs">
+<div class="flex flex-col pr-2">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Routine Wake Notes</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Blocked entirely until scheduled wake time</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Add Member Exception Pill Button -->
+<button class="w-full py-3.5 px-4 rounded-DEFAULT bg-surface-container-high/60 hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg flex items-center justify-center gap-2 transition-colors active:scale-[0.99]">
+<span class="material-symbols-outlined text-[20px] text-primary">add_circle</span>
+<span>Add Custom Member Exception</span>
+</button>
+</section>
+<!-- Bento 3: Breakthrough Audio Delivery Vibe -->
+<section class="bg-surface-container-low rounded-lg p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Audio Vibe &amp; Haptic Texture</span>
+<span class="material-symbols-outlined text-primary text-[20px]">graphic_eq</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Choose the sound tone that plays whenever an approved breakthrough occurs during sleep.
+        </p>
+<!-- Sound Tone Pills -->
+<div class="flex flex-wrap gap-2 pt-1">
+<button class="px-3.5 py-2 rounded-full bg-inverse-surface text-inverse-on-surface font-label-md text-label-md font-semibold flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary-fixed">music_note</span>
+<span>Tibetan Bowl Swell (Soft)</span>
+</button>
+<button class="px-3.5 py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md flex items-center gap-1.5 hover:bg-surface-container-high transition-colors">
+<span>Warm Piano Chime</span>
+</button>
+<button class="px-3.5 py-2 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md flex items-center gap-1.5 hover:bg-surface-container-high transition-colors">
+<span>Ambient River Glow</span>
+</button>
+</div>
+<!-- Haptic Filter Toggle -->
+<div class="bg-surface-container-lowest p-space-sm rounded-DEFAULT flex items-center justify-between shadow-xs mt-1">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-outline text-[20px]">vibration</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Muted Vibration Pulses</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Micro-taps only; avoids harsh buzzing</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</section>
+<!-- Sticky / Prominent Action Controls -->
+<div class="flex flex-col gap-2 pt-space-xs">
+<button class="w-full h-[54px] rounded-full bg-inverse-surface text-inverse-on-surface font-headline-sm text-headline-sm flex items-center justify-center gap-2 shadow-[0_10px_24px_rgba(28,27,27,0.22)] active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[22px] text-primary-fixed">bedtime</span>
+<span>Save Bedtime Sync &amp; Exceptions</span>
+</button>
+<button class="w-full py-3 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md text-center transition-colors">
+          Reset to Circle Defaults
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function adjustTime(elementId, deltaMinutes) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const parts = el.innerText.split(':');
+    let hours = parseInt(parts[0], 10);
+    let mins = parseInt(parts[1], 10);
+    
+    let total = hours * 60 + mins + deltaMinutes;
+    if (total < 0) total += 24 * 60;
+    total = total % (24 * 60);
+
+    const newH = Math.floor(total / 60).toString().padStart(2, '0');
+    const newM = (total % 60).toString().padStart(2, '0');
+    el.innerText = `${newH}:${newM}`;
+  }
+</script></main><div class="fixed bottom-0 inset-x-0 z-50 pb-safe px-margin pointer-events-none"><nav class="pointer-events-auto mx-auto mb-space-sm max-w-md h-16 bg-inverse-surface rounded-full shadow-[0_10px_30px_rgba(23,23,23,0.18)] flex items-center justify-between px-space-md relative" data-active-classes="text-surface-bright font-label-md"><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="alarms" href="#"><span class="material-symbols-outlined text-[22px]">alarm</span><span class="font-label-sm text-label-sm mt-0.5">Alarms</span></a><div class="relative flex items-center justify-center"><a aria-label="Create new entry" class="w-14 h-14 -mt-6 rounded-full bg-primary-container text-inverse-surface flex items-center justify-center shadow-[0_8px_20px_rgba(245,172,215,0.45)] hover:scale-105 active:scale-95 transition-transform" data-path="new-entry" href="#"><span class="material-symbols-outlined text-[28px] font-bold">add</span></a></div><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="tasks" href="#"><span class="material-symbols-outlined text-[22px]">check_circle</span><span class="font-label-sm text-label-sm mt-0.5">Tasks</span></a><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="chats" href="#"><span class="material-symbols-outlined text-[22px]">chat_bubble</span><span class="font-label-sm text-label-sm mt-0.5">Chats</span></a><a class="flex flex-col items-center justify-center min-w-[48px] h-12 text-surface-container-high/60 hover:text-surface-bright transition-colors group" data-path="people" href="#"><span class="material-symbols-outlined text-[22px]">group</span><span class="font-label-sm text-label-sm mt-0.5">People</span></a></nav></div></body></html>

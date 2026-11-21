@@ -3,19 +3,42 @@ package com.onereflection.app.ui.screens
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,407 +49,440 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.onereflection.app.data.ChimePlayer
-import com.onereflection.app.model.*
+import com.onereflection.app.model.AvatarUrls
+import com.onereflection.app.model.ChimeType
+import com.onereflection.app.model.OneReflectionUiState
+import com.onereflection.app.model.ScreenId
 import com.onereflection.app.ui.components.AvatarImage
-import com.onereflection.app.ui.theme.BrandColors
-import com.onereflection.app.viewmodel.OneReflectionUiState
-import kotlinx.coroutines.delay
+import com.onereflection.app.ui.components.OneReflectionLogoMark
+import com.onereflection.app.ui.theme.BodyFontFamily
+import com.onereflection.app.ui.theme.DisplayFontFamily
+import com.onereflection.app.ui.theme.MonoFontFamily
+import com.onereflection.app.ui.theme.OneReflectionColors
 
 @Composable
 fun PeopleScreen(
-    state: OneReflectionUiState,
+    uiState: OneReflectionUiState,
     onNavigate: (ScreenId) -> Unit,
-    onBack: () -> Unit,
+    onOpenVoiceStudio: () -> Unit,
     onOpenBedtimeSync: () -> Unit,
-    onDismissPendingRequest: (Boolean) -> Unit
+    onPlayChime: (ChimeType) -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    BackHandler { onNavigate(ScreenId.HOME) }
 
     val context = LocalContext.current
-    val oledMode = state.oledMode
-    var copied by remember { mutableStateOf(false) }
-    var mayaVoiceAlarms by remember { mutableStateOf(true) }
-    var mayaSharedHabits by remember { mutableStateOf(true) }
-    var mayaRhythmPings by remember { mutableStateOf(true) }
+    var pendingAccepted by remember { mutableStateOf(false) }
+    var pendingDismissed by remember { mutableStateOf(false) }
 
-    LaunchedEffect(copied) {
-        if (copied) {
-            delay(2200L)
-            copied = false
-        }
-    }
-
-    val textPrimary = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-    val textSecondary = if (oledMode) Color(0xFFA1A1AA) else BrandColors.OnSurfaceVariant
-    val cardBorder = if (oledMode) BrandColors.OledBorder else Color.Black.copy(alpha = 0.06f)
-
-    fun copySyncKey() {
-        ChimePlayer.play(ChimeType.CLICK)
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-        clipboard?.setPrimaryClip(ClipData.newPlainText("OneReflection Sync Key", "REFLECTION-MY-8924"))
-        copied = true
-    }
-
-    fun shareSyncLink() {
-        ChimePlayer.play(ChimeType.CLICK)
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "Join my OneReflection trusted circle with Sync Key: REFLECTION-MY-8924")
-        }
-        context.startActivity(Intent.createChooser(intent, "Share Sync Key"))
-    }
+    val oledMode = uiState.oledMode
+    val cardBg = if (oledMode) OneReflectionColors.OledSurface else OneReflectionColors.SurfaceCard
+    val borderColor = if (oledMode) OneReflectionColors.OledBorder else OneReflectionColors.HairlineLight
+    val syncKey = "REFLECTION-MY-8924"
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 110.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 148.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 1. Header
+        // Editorial Header
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Row(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(BrandColors.YellowFixed)
-                        .padding(horizontal = 10.dp, vertical = 5.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(Icons.Default.VerifiedUser, contentDescription = null, tint = Color(0xFF221B00), modifier = Modifier.size(14.dp))
-                    Text("TRUSTED CIRCLE • SAFE SYNC", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF221B00))
-                }
-                Text("Better together.", style = MaterialTheme.typography.headlineLarge, color = textPrimary)
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    "Invite your closest souls, share playful voice wake-ups, and sync daily habits in warm harmony.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = textSecondary
+                    text = "TRUSTED INNER CIRCLE & SYNC KEY",
+                    fontFamily = MonoFontFamily,
+                    fontSize = 10.5.sp,
+                    letterSpacing = 1.2.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "Better together.",
+                    fontFamily = DisplayFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 31.sp,
+                    letterSpacing = (-0.6).sp,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
 
-        // 2. Hero Sync Key & Stylized QR Card (Candy Pink)
+        // Signature Obsidian & Gold Sync Key Card with Custom Brand Logo Center Emblem
         item {
             Surface(
-                shape = RoundedCornerShape(28.dp),
-                color = BrandColors.CandyPink,
-                border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.08f))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("people_sync_key_card"),
+                shape = RoundedCornerShape(30.dp),
+                color = if (oledMode) OneReflectionColors.OledSurface else OneReflectionColors.InkPrimary,
+                border = BorderStroke(1.dp, OneReflectionColors.GoldLuminous.copy(alpha = 0.35f)),
+                shadowElevation = if (oledMode) 0.dp else 8.dp
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(22.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.clip(CircleShape).background(Color.White).padding(horizontal = 12.dp, vertical = 5.dp)) {
-                            Text("Your Sync Key", style = MaterialTheme.typography.labelMedium, color = BrandColors.OnSurfaceDark)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "PRIVATE SANCTUARY KEY",
+                                fontFamily = MonoFontFamily,
+                                fontSize = 9.5.sp,
+                                letterSpacing = 1.sp,
+                                color = OneReflectionColors.GoldLuminous
+                            )
+                            Text(
+                                text = "Elena Vance",
+                                fontFamily = DisplayFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 20.sp,
+                                color = Color.White
+                            )
                         }
-                        Box(modifier = Modifier.size(34.dp).clip(CircleShape).background(BrandColors.ButterYellow), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Favorite, contentDescription = null, tint = BrandColors.ButterYellowText, modifier = Modifier.size(18.dp))
+                        Surface(
+                            shape = CircleShape,
+                            color = OneReflectionColors.GoldLuminous.copy(alpha = 0.16f)
+                        ) {
+                            Text(
+                                text = "E2E VERIFIED",
+                                fontFamily = MonoFontFamily,
+                                fontSize = 9.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = OneReflectionColors.GoldLuminous,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                            )
                         }
                     }
 
-                    // Stylized Canvas QR Code
-                    Surface(shape = RoundedCornerShape(22.dp), color = Color.White, shadowElevation = 2.dp) {
-                        Column(modifier = Modifier.padding(14.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    // Crisp Warm-Alabaster QR Frame with OneReflection Logo Mark Centered
+                    Surface(
+                        shape = RoundedCornerShape(24.dp),
+                        color = OneReflectionColors.SurfaceWarm,
+                        border = BorderStroke(1.5.dp, OneReflectionColors.GoldLuminous.copy(alpha = 0.55f))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(176.dp)
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            SanctuaryQrPattern(modifier = Modifier.fillMaxSize())
                             Box(
                                 modifier = Modifier
-                                    .size(152.dp)
+                                    .size(44.dp)
                                     .clip(RoundedCornerShape(14.dp))
-                                    .background(BrandColors.SurfaceContainerLow)
-                                    .padding(10.dp),
+                                    .background(OneReflectionColors.SurfaceWarm)
+                                    .padding(4.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Canvas(modifier = Modifier.fillMaxSize()) {
-                                    val c = BrandColors.OnSurfaceDark
-                                    val s = size.minDimension / 160f
-                                    fun finder(x: Float, y: Float) {
-                                        drawRoundRect(c, Offset(x * s, y * s), Size(40f * s, 40f * s), CornerRadius(8f * s))
-                                        drawRoundRect(Color.White, Offset((x + 8) * s, (y + 8) * s), Size(24f * s, 24f * s), CornerRadius(4f * s))
-                                        drawRoundRect(c, Offset((x + 14) * s, (y + 14) * s), Size(12f * s, 12f * s), CornerRadius(2f * s))
-                                    }
-                                    finder(10f, 10f)
-                                    finder(110f, 10f)
-                                    finder(10f, 110f)
-                                    val dots = listOf(
-                                        Triple(68f, 22f, 5f), Triple(88f, 22f, 4f), Triple(78f, 38f, 6f),
-                                        Triple(28f, 74f, 5f), Triple(46f, 82f, 6f), Triple(120f, 68f, 5f),
-                                        Triple(138f, 80f, 6f), Triple(66f, 116f, 6f), Triple(86f, 120f, 4f),
-                                        Triple(120f, 124f, 5f), Triple(136f, 138f, 6f)
-                                    )
-                                    dots.forEach { (cx, cy, r) ->
-                                        drawCircle(c, radius = r * s, center = Offset(cx * s, cy * s))
-                                    }
-                                    drawRoundRect(c, Offset(62f * s, 52f * s), Size(10f * s, 10f * s), CornerRadius(3f * s))
-                                    drawRoundRect(c, Offset(70f * s, 132f * s), Size(18f * s, 12f * s), CornerRadius(3f * s))
-                                }
-                                Box(
-                                    modifier = Modifier.size(38.dp).clip(CircleShape).background(BrandColors.ButterYellow),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(Icons.Default.Sensors, contentDescription = null, tint = BrandColors.ButterYellowText, modifier = Modifier.size(20.dp))
-                                }
+                                OneReflectionLogoMark(size = 36.dp, cornerRadius = 11.dp, showGoldRing = true)
                             }
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text("SCAN TO SYNC", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.OnSurfaceVariant)
                         }
                     }
 
-                    // Unique Code Pill
-                    Surface(
-                        onClick = { copySyncKey() },
-                        shape = CircleShape,
-                        color = Color.White,
-                        modifier = Modifier.testTag("people_copy_code_btn")
+                    Text(
+                        text = syncKey,
+                        fontFamily = MonoFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp,
+                        letterSpacing = 1.2.sp,
+                        color = OneReflectionColors.GoldLuminous
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("people_copy_key_button")
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                                    cm?.setPrimaryClip(ClipData.newPlainText("OneReflection Sync Key", syncKey))
+                                    onPlayChime(ChimeType.CLICK)
+                                    Toast.makeText(context, "Sync key copied", Toast.LENGTH_SHORT).show()
+                                },
+                            shape = RoundedCornerShape(16.dp),
+                            color = OneReflectionColors.Terracotta
                         ) {
-                            Text("REFLECTION-MY-8924", style = MaterialTheme.typography.titleSmall, color = BrandColors.OnSurfaceDark)
-                            Box(modifier = Modifier.size(24.dp).clip(CircleShape).background(BrandColors.OnSurfaceDark), contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = if (copied) Icons.Default.Check else Icons.Default.ContentCopy,
-                                    contentDescription = "Copy sync key",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(13.dp)
-                                )
+                            Row(
+                                modifier = Modifier.padding(vertical = 11.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Filled.ContentCopy, contentDescription = "Copy key", tint = Color.White, modifier = Modifier.size(15.dp))
+                                Spacer(Modifier.width(6.dp))
+                                Text("Copy Key", fontFamily = BodyFontFamily, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
                             }
                         }
-                    }
 
-                    if (copied) {
-                        Text("Code copied to clipboard!", style = MaterialTheme.typography.labelSmall, color = BrandColors.CandyPinkDeep)
-                    }
-
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Button(
-                            onClick = { shareSyncLink() },
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                            modifier = Modifier.weight(1f).height(46.dp)
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("people_share_key_button")
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    onPlayChime(ChimeType.TIBETAN)
+                                    Toast.makeText(context, "Invite link ready to share", Toast.LENGTH_SHORT).show()
+                                },
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color.White.copy(alpha = 0.12f),
+                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.18f))
                         ) {
-                            Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Share Link", style = MaterialTheme.typography.labelMedium)
+                            Row(
+                                modifier = Modifier.padding(vertical = 11.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Filled.Share, contentDescription = "Share invite", tint = Color.White, modifier = Modifier.size(15.dp))
+                                Spacer(Modifier.width(6.dp))
+                                Text("Share", fontFamily = BodyFontFamily, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.White)
+                            }
                         }
-                        Button(
-                            onClick = { copySyncKey() },
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = BrandColors.OnSurfaceDark),
-                            modifier = Modifier.weight(1f).height(46.dp)
+
+                        Surface(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .testTag("people_scan_qr_button")
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable {
+                                    onPlayChime(ChimeType.CLICK)
+                                    Toast.makeText(context, "Ready to pair new member", Toast.LENGTH_SHORT).show()
+                                },
+                            shape = RoundedCornerShape(14.dp),
+                            color = OneReflectionColors.GoldLuminous.copy(alpha = 0.2f)
                         ) {
-                            Icon(Icons.Default.QrCodeScanner, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Copy Key", style = MaterialTheme.typography.labelMedium)
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Filled.QrCodeScanner, contentDescription = "Scan key", tint = OneReflectionColors.GoldLuminous, modifier = Modifier.size(18.dp))
+                            }
                         }
                     }
                 }
             }
         }
 
-        // 3. Pending Requests
-        if (!state.pendingRequestDismissed) {
+        // Pending Request Card
+        if (!pendingDismissed) {
             item {
                 Surface(
-                    shape = RoundedCornerShape(26.dp),
-                    color = if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerLow,
-                    border = BorderStroke(1.dp, cardBorder)
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    color = if (oledMode) OneReflectionColors.OledSurface else OneReflectionColors.HoneyMist,
+                    border = BorderStroke(1.dp, OneReflectionColors.BurnishedGold.copy(alpha = 0.28f))
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Box(
-                                modifier = Modifier.size(44.dp).clip(CircleShape).background(BrandColors.LavenderSoft),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("JV", style = MaterialTheme.typography.titleSmall, color = BrandColors.LavenderText)
-                            }
-                            Column {
-                                Text("Julian Vance", style = MaterialTheme.typography.titleSmall, color = textPrimary)
-                                Text("Connected with Leo Chen • Pending Request", style = MaterialTheme.typography.bodySmall, color = textSecondary)
-                            }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        AvatarImage(
+                            url = null,
+                            fallbackInitials = "JV",
+                            contentDescription = "Julian Vance",
+                            size = 44.dp,
+                            fallbackBg = OneReflectionColors.InkPrimary,
+                            fallbackText = OneReflectionColors.GoldLuminous
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (pendingAccepted) "CIRCLE MEMBER ADDED" else "PENDING INVITE",
+                                fontFamily = MonoFontFamily,
+                                fontSize = 9.5.sp,
+                                color = if (oledMode) OneReflectionColors.GoldLuminous else OneReflectionColors.HoneyInk
+                            )
+                            Text(
+                                text = "Julian Vance",
+                                fontFamily = DisplayFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 17.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = "Brother • Wants to share wake alarms",
+                                fontFamily = BodyFontFamily,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(
-                                onClick = { onDismissPendingRequest(true) },
+                        if (!pendingAccepted) {
+                            Surface(
+                                modifier = Modifier
+                                    .testTag("people_accept_julian")
+                                    .clip(CircleShape)
+                                    .clickable {
+                                        pendingAccepted = true
+                                        onPlayChime(ChimeType.SOLFEGGIO)
+                                    },
                                 shape = CircleShape,
-                                colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                                modifier = Modifier.weight(1f).height(42.dp).testTag("people_accept_julian")
+                                color = OneReflectionColors.SageDeep
                             ) {
-                                Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Accept & Sync", style = MaterialTheme.typography.labelMedium)
-                            }
-                            OutlinedButton(
-                                onClick = { onDismissPendingRequest(false) },
-                                shape = CircleShape,
-                                modifier = Modifier.height(42.dp)
-                            ) {
-                                Text("Dismiss", style = MaterialTheme.typography.labelMedium)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 4. Inner Circle Members
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("Your Inner Circle", style = MaterialTheme.typography.titleLarge, color = textPrimary)
-
-                // Maya R. (Butter Yellow)
-                Surface(
-                    shape = RoundedCornerShape(26.dp),
-                    color = BrandColors.ButterYellow,
-                    border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.08f))
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                AvatarImage(AVATAR_MAYA, "MR", "Maya R.", 48.dp)
-                                Column {
-                                    Text("Maya R.", style = MaterialTheme.typography.titleMedium, color = BrandColors.OnSurfaceDark)
-                                    Text("Awake & synced at 06:45 AM", style = MaterialTheme.typography.bodySmall, color = BrandColors.ButterYellowText)
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(Icons.Filled.Check, contentDescription = "Accept", tint = Color.White, modifier = Modifier.size(14.dp))
+                                    Text("Accept", fontSize = 11.5.sp, fontWeight = FontWeight.Bold, color = Color.White)
                                 }
                             }
-                            IconButton(onClick = onOpenBedtimeSync) {
-                                Icon(Icons.Default.Tune, contentDescription = "Manage Maya access", tint = BrandColors.OnSurfaceDark)
-                            }
-                        }
-
-                        PermissionToggleRow("Voice Alarms", Icons.Default.Mic, mayaVoiceAlarms) {
-                            ChimePlayer.play(ChimeType.CLICK)
-                            mayaVoiceAlarms = !mayaVoiceAlarms
-                        }
-                        PermissionToggleRow("Shared Habits & Tasks", Icons.Default.Checklist, mayaSharedHabits) {
-                            ChimePlayer.play(ChimeType.CLICK)
-                            mayaSharedHabits = !mayaSharedHabits
-                        }
-                        PermissionToggleRow("Rhythm Pings", Icons.Default.NotificationsActive, mayaRhythmPings) {
-                            ChimePlayer.play(ChimeType.CLICK)
-                            mayaRhythmPings = !mayaRhythmPings
-                        }
-
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(
-                                onClick = { onNavigate(ScreenId.CHATS) },
-                                shape = CircleShape,
-                                colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                                modifier = Modifier.weight(1f).height(42.dp)
-                            ) {
-                                Text("Voice Ping", style = MaterialTheme.typography.labelMedium)
-                            }
-                            Button(
-                                onClick = onOpenBedtimeSync,
-                                shape = CircleShape,
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = BrandColors.OnSurfaceDark),
-                                modifier = Modifier.weight(1f).height(42.dp)
-                            ) {
-                                Text("Manage Access", style = MaterialTheme.typography.labelMedium)
-                            }
-                        }
-                    }
-                }
-
-                // Leo Chen (Lavender Blue)
-                Surface(
-                    shape = RoundedCornerShape(26.dp),
-                    color = BrandColors.LavenderSoft,
-                    border = BorderStroke(1.dp, BrandColors.TertiarySlateBlue.copy(alpha = 0.2f))
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            AvatarImage(AVATAR_LEO, "LC", "Leo Chen", 46.dp)
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Leo Chen", style = MaterialTheme.typography.titleMedium, color = BrandColors.LavenderText)
-                                Text("Focus Session • 45m left", style = MaterialTheme.typography.bodySmall, color = BrandColors.LavenderMuted)
-                            }
-                            Box(modifier = Modifier.clip(CircleShape).background(Color.White).padding(horizontal = 9.dp, vertical = 4.dp)) {
-                                Text("Studio Sprint", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.LavenderText)
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(
-                                onClick = { onNavigate(ScreenId.TASKS) },
-                                shape = CircleShape,
-                                colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                                modifier = Modifier.weight(1f).height(40.dp)
-                            ) {
-                                Text("Sync Habit", style = MaterialTheme.typography.labelMedium)
-                            }
-                            Button(
-                                onClick = onOpenBedtimeSync,
-                                shape = CircleShape,
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = BrandColors.LavenderText),
-                                modifier = Modifier.height(40.dp)
-                            ) {
-                                Text("Permissions", style = MaterialTheme.typography.labelMedium)
-                            }
-                        }
-                    }
-                }
-
-                // Sofia Miller
-                Surface(
-                    shape = RoundedCornerShape(26.dp),
-                    color = if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerHigh,
-                    border = BorderStroke(1.dp, cardBorder)
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            AvatarImage(AVATAR_SOFIA, "SM", "Sofia Miller", 46.dp)
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Sofia Miller", style = MaterialTheme.typography.titleMedium, color = textPrimary)
-                                Text("Completed Hydration Streak (7d)", style = MaterialTheme.typography.bodySmall, color = textSecondary)
-                            }
-                            Box(modifier = Modifier.clip(CircleShape).background(if (oledMode) Color(0xFF27272A) else Color.White).padding(horizontal = 9.dp, vertical = 4.dp)) {
-                                Text("Ritual Pal", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textPrimary)
-                            }
-                        }
-                        Button(
-                            onClick = {
-                                ChimePlayer.play(ChimeType.WATER)
-                                onNavigate(ScreenId.CHATS)
-                            },
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                            modifier = Modifier.fillMaxWidth().height(40.dp)
-                        ) {
-                            Text("Send High Five", style = MaterialTheme.typography.labelMedium)
                         }
                     }
                 }
             }
         }
 
-        // 5. Security Footnote
+        // Inner Circle Members List
         item {
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerLow,
-                border = BorderStroke(1.dp, cardBorder)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = "TRUSTED CIRCLE (3)",
+                    fontFamily = MonoFontFamily,
+                    fontSize = 10.5.sp,
+                    letterSpacing = 1.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                CircleMemberEditorialCard(
+                    name = "Maya R.",
+                    role = "Partner • Bedtime Sync & Breakthrough",
+                    avatarUrl = AvatarUrls.MAYA,
+                    initials = "MR",
+                    statusBadge = "SYNCED",
+                    cardBg = cardBg,
+                    borderColor = borderColor,
+                    oledMode = oledMode,
+                    onVoiceClick = onOpenVoiceStudio,
+                    onSyncClick = onOpenBedtimeSync
+                )
+                CircleMemberEditorialCard(
+                    name = "Leo Chen",
+                    role = "Studio Co-Lead • Shared Flows",
+                    avatarUrl = AvatarUrls.LEO,
+                    initials = "LC",
+                    statusBadge = "ACTIVE",
+                    cardBg = cardBg,
+                    borderColor = borderColor,
+                    oledMode = oledMode,
+                    onVoiceClick = onOpenVoiceStudio,
+                    onSyncClick = onOpenBedtimeSync
+                )
+                CircleMemberEditorialCard(
+                    name = "Sofia Miller",
+                    role = "Wellness Circle • Daily Rituals",
+                    avatarUrl = AvatarUrls.SOFIA,
+                    initials = "SM",
+                    statusBadge = "7D STREAK",
+                    cardBg = cardBg,
+                    borderColor = borderColor,
+                    oledMode = oledMode,
+                    onVoiceClick = onOpenVoiceStudio,
+                    onSyncClick = onOpenBedtimeSync
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CircleMemberEditorialCard(
+    name: String,
+    role: String,
+    avatarUrl: String,
+    initials: String,
+    statusBadge: String,
+    cardBg: Color,
+    borderColor: Color,
+    oledMode: Boolean,
+    onVoiceClick: () -> Unit,
+    onSyncClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        color = cardBg,
+        border = BorderStroke(1.dp, borderColor)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            AvatarImage(
+                url = avatarUrl,
+                fallbackInitials = initials,
+                contentDescription = name,
+                size = 46.dp,
+                ringColor = OneReflectionColors.Terracotta.copy(alpha = 0.5f),
+                ringWidth = 1.5.dp
+            )
+
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        "End-to-end encrypted reflection mesh",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = if (oledMode) BrandColors.CandyPink else BrandColors.PrimaryPlum
+                        text = name,
+                        fontFamily = DisplayFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 17.sp,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
-                    Text(
-                        "You are always in complete control. Revoke any voice alarm or habit access instantly.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = textSecondary,
-                        textAlign = TextAlign.Center
-                    )
+                    Surface(
+                        shape = CircleShape,
+                        color = if (oledMode) Color(0xFF142722) else OneReflectionColors.SageMist
+                    ) {
+                        Text(
+                            text = statusBadge,
+                            fontFamily = MonoFontFamily,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (oledMode) OneReflectionColors.SageLight else OneReflectionColors.SageDeep,
+                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+                Text(
+                    text = role,
+                    fontFamily = BodyFontFamily,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(if (oledMode) OneReflectionColors.OledSurfaceElevated else OneReflectionColors.PeachMist)
+                        .clickable { onVoiceClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Filled.Mic, contentDescription = "Send voice note to $name", tint = OneReflectionColors.Terracotta, modifier = Modifier.size(18.dp))
+                }
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(if (oledMode) OneReflectionColors.OledSurfaceElevated else OneReflectionColors.IndigoMist)
+                        .clickable { onSyncClick() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Filled.Bedtime, contentDescription = "Sync bedtime with $name", tint = if (oledMode) OneReflectionColors.IndigoLight else OneReflectionColors.IndigoDeep, modifier = Modifier.size(18.dp))
                 }
             }
         }
@@ -434,39 +490,54 @@ fun PeopleScreen(
 }
 
 @Composable
-private fun PermissionToggleRow(
-    label: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    enabled: Boolean,
-    onToggle: () -> Unit
-) {
-    Surface(
-        onClick = onToggle,
-        shape = RoundedCornerShape(16.dp),
-        color = Color.White
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(icon, contentDescription = null, tint = BrandColors.PrimaryPlum, modifier = Modifier.size(16.dp))
-                Text(label, style = MaterialTheme.typography.labelMedium, color = BrandColors.OnSurfaceDark)
-            }
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(if (enabled) BrandColors.ButterYellow else BrandColors.SurfaceContainerHigh),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Default.Check,
-                    contentDescription = null,
-                    tint = if (enabled) BrandColors.ButterYellowText else BrandColors.OutlineVariant,
-                    modifier = Modifier.size(14.dp)
-                )
+private fun SanctuaryQrPattern(modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier) {
+        val cells = 11
+        val cellSize = size.minDimension / cells
+        val darkInk = OneReflectionColors.InkPrimary
+        val accentInk = OneReflectionColors.Terracotta
+
+        fun drawFinder(col: Int, row: Int) {
+            drawRoundRect(
+                color = darkInk,
+                topLeft = Offset(col * cellSize, row * cellSize),
+                size = Size(cellSize * 3f, cellSize * 3f),
+                cornerRadius = CornerRadius(cellSize * 0.45f, cellSize * 0.45f)
+            )
+            drawRoundRect(
+                color = OneReflectionColors.SurfaceWarm,
+                topLeft = Offset((col + 0.55f) * cellSize, (row + 0.55f) * cellSize),
+                size = Size(cellSize * 1.9f, cellSize * 1.9f),
+                cornerRadius = CornerRadius(cellSize * 0.25f, cellSize * 0.25f)
+            )
+            drawRoundRect(
+                color = accentInk,
+                topLeft = Offset((col + 1f) * cellSize, (row + 1f) * cellSize),
+                size = Size(cellSize, cellSize),
+                cornerRadius = CornerRadius(cellSize * 0.2f, cellSize * 0.2f)
+            )
+        }
+
+        drawFinder(0, 0)
+        drawFinder(8, 0)
+        drawFinder(0, 8)
+
+        for (r in 0 until cells) {
+            for (c in 0 until cells) {
+                val inTopLeft = r < 4 && c < 4
+                val inTopRight = r < 4 && c >= 7
+                val inBottomLeft = r >= 7 && c < 4
+                val inCenter = r in 4..6 && c in 4..6
+                if (!inTopLeft && !inTopRight && !inBottomLeft && !inCenter) {
+                    if ((r * 7 + c * 11 + r * c) % 3 != 0) {
+                        drawRoundRect(
+                            color = darkInk,
+                            topLeft = Offset(c * cellSize + cellSize * 0.14f, r * cellSize + cellSize * 0.14f),
+                            size = Size(cellSize * 0.72f, cellSize * 0.72f),
+                            cornerRadius = CornerRadius(cellSize * 0.24f, cellSize * 0.24f)
+                        )
+                    }
+                }
             }
         }
     }

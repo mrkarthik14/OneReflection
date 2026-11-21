@@ -2,342 +2,759 @@ package com.onereflection.app.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.GraphicEq
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.onereflection.app.data.ChimePlayer
-import com.onereflection.app.model.AVATAR_ELENA
+import com.onereflection.app.R
+import com.onereflection.app.model.AvatarUrls
 import com.onereflection.app.model.ChimeType
+import com.onereflection.app.model.ElementalTheme
+import com.onereflection.app.model.OneReflectionUiState
 import com.onereflection.app.model.ScreenId
+import com.onereflection.app.model.ThemeApplyScope
+import com.onereflection.app.model.ThemeModeSlot
+import com.onereflection.app.ui.components.AmbientSoundscapeSettingsCard
 import com.onereflection.app.ui.components.AvatarImage
+import com.onereflection.app.ui.components.ElementalDayPill
+import com.onereflection.app.ui.components.ElementalThemeCarousel
+import com.onereflection.app.ui.components.EnchantedDayNightToggle
+import com.onereflection.app.ui.components.OneReflectionLogoMark
 import com.onereflection.app.ui.components.OneReflectionSwitch
-import com.onereflection.app.ui.theme.BrandColors
-import com.onereflection.app.viewmodel.OneReflectionUiState
+import com.onereflection.app.ui.theme.BodyFontFamily
+import com.onereflection.app.ui.theme.DisplayFontFamily
+import com.onereflection.app.ui.theme.LocalElementalPalette
+import com.onereflection.app.ui.theme.MonoFontFamily
+import com.onereflection.app.ui.theme.OneReflectionColors
 
 @Composable
 fun ProfileScreen(
-    state: OneReflectionUiState,
+    uiState: OneReflectionUiState,
     onNavigate: (ScreenId) -> Unit,
-    onBack: () -> Unit,
-    onOpenBedtimeSync: () -> Unit
+    onOpenVoiceStudio: () -> Unit,
+    onOpenBedtimeSync: () -> Unit,
+    onToggleOled: () -> Unit,
+    onSelectDay: (Int) -> Unit,
+    onAssignDayTheme: (Int, ElementalTheme) -> Unit,
+    onApplyThemeWithScope: (ThemeApplyScope, ThemeModeSlot, ScreenId, ElementalTheme) -> Unit,
+    onClearPageTheme: (ScreenId, ThemeModeSlot) -> Unit,
+    onResetDayThemes: () -> Unit,
+    onToggleAmbientSound: () -> Unit,
+    onSetAmbientSoundVolume: (Float) -> Unit,
+    onPlayChime: (ChimeType) -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    BackHandler { onNavigate(ScreenId.HOME) }
 
-    val oledMode = state.oledMode
-    var eqPreset by remember { mutableStateOf("studio") }
-    var fadeEnabled by remember { mutableStateOf(true) }
-    var morningNotesEnabled by remember { mutableStateOf(true) }
-    var habitsVisibility by remember { mutableStateOf(true) }
-    var noPressureNudges by remember { mutableStateOf(true) }
-    var softHaptics by remember { mutableStateOf(true) }
-    var cacheCleared by remember { mutableStateOf(false) }
+    var selectedPersona by remember { mutableIntStateOf(0) }
+    var spatialAudio by remember { mutableStateOf(true) }
+    var gentleHaptics by remember { mutableStateOf(true) }
+    var encryptedVault by remember { mutableStateOf(true) }
 
-    val textPrimary = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-    val textSecondary = if (oledMode) Color(0xFFA1A1AA) else BrandColors.OnSurfaceVariant
-    val cardBorder = if (oledMode) BrandColors.OledBorder else Color.Black.copy(alpha = 0.06f)
+    val personas = listOf("Warm Velvet", "Crisp Studio", "Soft Whisper")
+    val oledMode = uiState.oledMode
+    val palette = LocalElementalPalette.current
+    val cardBg = palette.surfaceCard
+    val borderColor = palette.border
+    val days = remember {
+        listOf("M" to "13", "T" to "14", "W" to "15", "T" to "16", "F" to "17", "S" to "18", "S" to "19")
+    }
+    val dayFullNames = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    val activeDay = uiState.selectedDayIndex
+    val activeElement = uiState.activeElementalTheme
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 110.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 164.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 1. Header
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerHigh)
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
-                ) {
-                    Text("YOUR SPACE • PREFERENCES & IDENTITY", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textSecondary)
-                }
-                Text("Profile & Harmony.", style = MaterialTheme.typography.headlineLarge, color = textPrimary)
-                Text("Manage your voice persona, partner sync mesh, bedtime routines, and privacy boundaries.", style = MaterialTheme.typography.bodySmall, color = textSecondary)
-            }
-        }
-
-        // 2. Hero Profile Card (Candy Pink)
+        // Hero Identity Banner with Sanctuary Artwork + Active Elemental Glow
         item {
             Surface(
-                shape = RoundedCornerShape(28.dp),
-                color = BrandColors.CandyPink,
-                border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.08f))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("profile_hero_card"),
+                shape = RoundedCornerShape(30.dp),
+                color = palette.heroEnd,
+                border = BorderStroke(1.2.dp, palette.primaryBright.copy(alpha = 0.45f))
             ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
-                        AvatarImage(AVATAR_ELENA, "EV", "Elena Vance", 76.dp, ringWidth = 3.dp)
-                        Box(modifier = Modifier.clip(CircleShape).background(Color.White).padding(horizontal = 12.dp, vertical = 6.dp)) {
-                            Text("Awake & Flowing", style = MaterialTheme.typography.labelSmall, color = BrandColors.OnSurfaceDark)
-                        }
-                    }
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Image(
+                        painter = painterResource(id = R.drawable.img_sanctuary_hero_1795264045436),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .matchParentSize()
+                            .alpha(0.22f)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        palette.heroStart.copy(alpha = 0.88f),
+                                        palette.heroEnd.copy(alpha = 0.96f)
+                                    )
+                                )
+                            )
+                    )
 
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text("Elena Vance", style = MaterialTheme.typography.headlineMedium, color = BrandColors.OnSurfaceDark)
-                            Icon(Icons.Default.Verified, contentDescription = null, tint = BrandColors.PrimaryPlum, modifier = Modifier.size(18.dp))
-                        }
-                        Text("@elenavance • Member since Nov 2023", style = MaterialTheme.typography.bodySmall, color = BrandColors.CandyPinkDeep)
-                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(22.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        AvatarImage(
+                            url = AvatarUrls.ELENA,
+                            fallbackInitials = "EV",
+                            contentDescription = "Elena Vance",
+                            size = 76.dp,
+                            ringColor = palette.primaryBright,
+                            ringWidth = 2.dp
+                        )
 
-                    Surface(shape = RoundedCornerShape(18.dp), color = Color.White.copy(alpha = 0.94f)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Paired with Maya R. (@mayar)", style = MaterialTheme.typography.labelMedium, color = BrandColors.OnSurfaceDark)
-                                Text("Live Heartbeat & Morning Mesh Active", fontSize = 10.sp, color = BrandColors.OnSurfaceVariant)
-                            }
-                            Box(modifier = Modifier.clip(CircleShape).background(BrandColors.LavenderSoft).padding(horizontal = 8.dp, vertical = 4.dp)) {
-                                Text("Mutual Consent", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.LavenderText)
-                            }
-                        }
-                    }
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Button(
-                            onClick = { onNavigate(ScreenId.PEOPLE) },
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                            modifier = Modifier.weight(1f).height(44.dp)
-                        ) {
-                            Icon(Icons.Default.QrCode2, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Identity Key", style = MaterialTheme.typography.labelMedium)
-                        }
-                        Button(
-                            onClick = onOpenBedtimeSync,
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = BrandColors.OnSurfaceDark),
-                            modifier = Modifier.weight(1f).height(44.dp)
-                        ) {
-                            Icon(Icons.Default.Bedtime, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Quiet Rules", style = MaterialTheme.typography.labelMedium)
-                        }
-                    }
-                }
-            }
-        }
-
-        // 3. Voice Persona & Mic Quality (Butter Yellow)
-        item {
-            Surface(
-                shape = RoundedCornerShape(28.dp),
-                color = BrandColors.ButterYellow,
-                border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.08f))
-            ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("ACOUSTIC IDENTITY", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.ButterYellowText)
-                    Text("Voice Persona & Mic Quality", style = MaterialTheme.typography.titleLarge, color = BrandColors.OnSurfaceDark)
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf("studio" to "Crisp Studio", "vintage" to "Warm Vintage", "whisper" to "Whisper EQ").forEach { (id, label) ->
-                            val sel = eqPreset == id
-                            Surface(
-                                onClick = {
-                                    ChimePlayer.play(ChimeType.CLICK)
-                                    eqPreset = id
-                                },
-                                shape = CircleShape,
-                                color = if (sel) BrandColors.OnSurfaceDark else Color.White
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(
+                                text = "Elena Vance",
+                                fontFamily = DisplayFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 26.sp,
+                                color = Color.White
+                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
+                                OneReflectionLogoMark(size = 18.dp, cornerRadius = 6.dp, showGoldRing = false)
                                 Text(
-                                    text = label,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = if (sel) Color.White else BrandColors.OnSurfaceDark,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                                    text = "SANCTUARY SETTINGS • @ELENA.V",
+                                    fontFamily = MonoFontFamily,
+                                    fontSize = 10.sp,
+                                    letterSpacing = 0.8.sp,
+                                    color = palette.primaryBright
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            ProfileStatPill(value = "14d", label = "STREAK")
+                            ProfileStatPill(value = "3", label = "CIRCLE")
+                            ProfileStatPill(value = "${uiState.alarms.count { it.enabled }}", label = "ALARMS")
+                        }
+                    }
+                }
+            }
+        }
+
+        // Dual Light/Dark & Single-Page / Entire-App Elemental Theme Customizer Studio
+        item {
+            var scopeChoice by remember { mutableStateOf(ThemeApplyScope.ENTIRE_APP) }
+            var modeChoice by remember(oledMode) {
+                mutableStateOf(if (oledMode) ThemeModeSlot.DARK else ThemeModeSlot.LIGHT)
+            }
+            val lightSlotTheme = if (scopeChoice == ThemeApplyScope.SINGLE_PAGE) {
+                uiState.pageLightThemes[ScreenId.PROFILE] ?: uiState.resolvedThemeFor(ScreenId.PROFILE, isDark = false)
+            } else {
+                if (uiState.useGlobalLightTheme) uiState.lightGlobalTheme
+                else uiState.dayThemes.getOrElse(activeDay) { uiState.lightGlobalTheme }
+            }
+            val darkSlotTheme = if (scopeChoice == ThemeApplyScope.SINGLE_PAGE) {
+                uiState.pageDarkThemes[ScreenId.PROFILE] ?: uiState.darkGlobalTheme
+            } else {
+                uiState.darkGlobalTheme
+            }
+            val shownTheme = if (modeChoice == ThemeModeSlot.DARK) darkSlotTheme else lightSlotTheme
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("profile_elemental_studio_card"),
+                shape = RoundedCornerShape(28.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, borderColor)
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "7 ELEMENTAL WORLDS · DUAL MODE",
+                                fontFamily = MonoFontFamily,
+                                fontSize = 10.sp,
+                                letterSpacing = 1.sp,
+                                color = palette.primary
+                            )
+                            Text(
+                                text = "${dayFullNames[activeDay]} • ${activeElement.displayName}",
+                                fontFamily = DisplayFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 20.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        EnchantedDayNightToggle(
+                            isDark = oledMode,
+                            onToggle = {
+                                onToggleOled()
+                                modeChoice = if (!oledMode) ThemeModeSlot.DARK else ThemeModeSlot.LIGHT
+                            },
+                            width = 76.dp,
+                            height = 38.dp,
+                            testTag = "profile_day_night_toggle"
+                        )
+                    }
+
+                    // Scope Switcher: Entire App vs This Page Only
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val isEntire = scopeChoice == ThemeApplyScope.ENTIRE_APP
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("profile_scope_entire_app")
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable { scopeChoice = ThemeApplyScope.ENTIRE_APP },
+                            shape = RoundedCornerShape(14.dp),
+                            color = if (isEntire) palette.primary else palette.surfaceElevated,
+                            border = BorderStroke(1.dp, if (isEntire) Color.Transparent else borderColor)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 9.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Filled.Public, contentDescription = null, tint = if (isEntire) palette.onPrimary else palette.primary, modifier = Modifier.size(14.dp))
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    text = "Entire App",
+                                    fontFamily = BodyFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = if (isEntire) palette.onPrimary else MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
+
+                        val isPage = scopeChoice == ThemeApplyScope.SINGLE_PAGE
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("profile_scope_single_page")
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable { scopeChoice = ThemeApplyScope.SINGLE_PAGE },
+                            shape = RoundedCornerShape(14.dp),
+                            color = if (isPage) palette.primary else palette.surfaceElevated,
+                            border = BorderStroke(1.dp, if (isPage) Color.Transparent else borderColor)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 9.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Filled.Layers, contentDescription = null, tint = if (isPage) palette.onPrimary else palette.primary, modifier = Modifier.size(14.dp))
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    text = "This Page",
+                                    fontFamily = BodyFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = if (isPage) palette.onPrimary else MaterialTheme.colorScheme.onBackground
                                 )
                             }
                         }
                     }
 
-                    Surface(shape = RoundedCornerShape(18.dp), color = Color.White.copy(alpha = 0.94f)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Gentle Fade-in on Alarms", style = MaterialTheme.typography.labelMedium, color = BrandColors.OnSurfaceDark)
-                                Text("Gradual volume swells over 4 minutes", fontSize = 10.sp, color = BrandColors.OnSurfaceVariant)
-                            }
-                            OneReflectionSwitch(
-                                checked = fadeEnabled,
-                                onCheckedChange = {
-                                    ChimePlayer.play(ChimeType.CLICK)
-                                    fadeEnabled = it
+                    // Dual Light & Dark Theme Slot Cards
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val lightSelected = modeChoice == ThemeModeSlot.LIGHT
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("profile_slot_light")
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    modeChoice = ThemeModeSlot.LIGHT
+                                    if (oledMode) onToggleOled()
                                 },
-                                thumbColor = BrandColors.ButterYellow
+                            shape = RoundedCornerShape(16.dp),
+                            color = if (lightSelected) palette.surfaceTint else palette.surfaceElevated,
+                            border = BorderStroke(if (lightSelected) 1.6.dp else 1.dp, if (lightSelected) palette.primary else borderColor)
+                        ) {
+                            Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Icon(Icons.Filled.LightMode, contentDescription = null, tint = palette.primary, modifier = Modifier.size(13.dp))
+                                    Text("LIGHT THEME", fontFamily = MonoFontFamily, fontSize = 8.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Text(
+                                    text = lightSlotTheme.displayName,
+                                    fontFamily = DisplayFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
+
+                        val darkSelected = modeChoice == ThemeModeSlot.DARK
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("profile_slot_dark")
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    modeChoice = ThemeModeSlot.DARK
+                                    if (!oledMode) onToggleOled()
+                                },
+                            shape = RoundedCornerShape(16.dp),
+                            color = if (darkSelected) palette.surfaceTint else palette.surfaceElevated,
+                            border = BorderStroke(if (darkSelected) 1.6.dp else 1.dp, if (darkSelected) palette.primary else borderColor)
+                        ) {
+                            Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Icon(Icons.Filled.DarkMode, contentDescription = null, tint = palette.primary, modifier = Modifier.size(13.dp))
+                                    Text("DARK THEME", fontFamily = MonoFontFamily, fontSize = 8.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                                Text(
+                                    text = darkSlotTheme.displayName,
+                                    fontFamily = DisplayFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
+                    }
+
+                    // 7-Day Selector inside Settings
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        days.forEachIndexed { idx, (lbl, num) ->
+                            ElementalDayPill(
+                                dayLabel = lbl,
+                                dayNumber = num,
+                                theme = uiState.dayThemes.getOrElse(idx) { ElementalTheme.BLOOM },
+                                selected = idx == activeDay,
+                                oledMode = oledMode,
+                                testTag = "profile_day_pill_$idx",
+                                onClick = { onSelectDay(idx) },
+                                modifier = Modifier.weight(1f)
                             )
                         }
                     }
 
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.clip(CircleShape).background(Color.White.copy(alpha = 0.85f)).padding(horizontal = 10.dp, vertical = 6.dp)) {
-                            Text("48kHz Lossless FLAC", style = MaterialTheme.typography.labelSmall, color = BrandColors.ButterYellowText)
+                    // 7-Element Animated Showcase Carousel
+                    ElementalThemeCarousel(
+                        selectedTheme = shownTheme,
+                        onSelectTheme = { chosen ->
+                            onApplyThemeWithScope(scopeChoice, modeChoice, ScreenId.PROFILE, chosen)
+                            if (scopeChoice == ThemeApplyScope.ENTIRE_APP && modeChoice == ThemeModeSlot.LIGHT) {
+                                onAssignDayTheme(activeDay, chosen)
+                            }
                         }
-                        Button(
-                            onClick = { ChimePlayer.play(ChimeType.TIBETAN) },
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                            modifier = Modifier.testTag("profile_test_ping_btn")
-                        ) {
-                            Icon(Icons.Default.VolumeUp, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Test Voice Ping", style = MaterialTheme.typography.labelSmall)
-                        }
-                    }
-                }
-            }
-        }
+                    )
 
-        // 4. Sync & Sharing Mesh (Lavender Blue)
-        item {
-            Surface(
-                shape = RoundedCornerShape(28.dp),
-                color = BrandColors.LavenderSoft,
-                border = BorderStroke(1.dp, BrandColors.TertiarySlateBlue.copy(alpha = 0.2f))
-            ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("RESONANCE NETWORK", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.LavenderMuted)
-                    Text("Sync & Sharing Mesh", style = MaterialTheme.typography.titleLarge, color = BrandColors.LavenderText)
-
-                    ProfileToggleRow("Morning Wake-up Voice Notes", morningNotesEnabled, BrandColors.TertiarySlateBlue) {
-                        ChimePlayer.play(ChimeType.CLICK)
-                        morningNotesEnabled = it
-                    }
-                    ProfileToggleRow("Shared Habit Streak Visibility", habitsVisibility, BrandColors.TertiarySlateBlue) {
-                        ChimePlayer.play(ChimeType.CLICK)
-                        habitsVisibility = it
-                    }
-
-                    Surface(
-                        onClick = onOpenBedtimeSync,
-                        shape = RoundedCornerShape(16.dp),
-                        color = Color.White.copy(alpha = 0.88f)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text("Quiet Hours Sync", style = MaterialTheme.typography.labelMedium, color = BrandColors.OnSurfaceDark)
-                                Text("Bedtime silence locked", fontSize = 10.sp, color = BrandColors.OnSurfaceVariant)
-                            }
-                            Box(modifier = Modifier.clip(CircleShape).background(BrandColors.LavenderSoft).padding(horizontal = 10.dp, vertical = 5.dp)) {
-                                Text("${state.quietHours.formattedBedtime()} - ${state.quietHours.formattedWake()}", style = MaterialTheme.typography.labelSmall, color = BrandColors.LavenderText)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 5. Mindful Notifications & Privacy Vault
-        item {
-            Surface(
-                shape = RoundedCornerShape(26.dp),
-                color = if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerLow,
-                border = BorderStroke(1.dp, cardBorder)
-            ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Mindful Notifications & Privacy", style = MaterialTheme.typography.titleMedium, color = textPrimary)
-
-                    ProfileToggleRow("No-Pressure Daily Nudges", noPressureNudges, BrandColors.PrimaryPlum) {
-                        ChimePlayer.play(ChimeType.CLICK)
-                        noPressureNudges = it
-                    }
-                    ProfileToggleRow("Soft Haptic Vibration Rhythms", softHaptics, BrandColors.PrimaryPlum) {
-                        ChimePlayer.play(ChimeType.CLICK)
-                        softHaptics = it
-                    }
-
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = if (oledMode) BrandColors.OledBlack else Color.White
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text("Offline Audio Cache", style = MaterialTheme.typography.labelMedium, color = textPrimary)
-                                Text(if (cacheCleared) "0 MB (Cleaned)" else "248 MB stored locally", fontSize = 10.sp, color = textSecondary)
-                            }
-                            Surface(
-                                onClick = {
-                                    ChimePlayer.play(ChimeType.CLICK)
-                                    cacheCleared = true
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("profile_apply_theme_all")
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    if (scopeChoice == ThemeApplyScope.SINGLE_PAGE && uiState.hasCustomPageTheme(ScreenId.PROFILE, modeChoice == ThemeModeSlot.DARK)) {
+                                        onClearPageTheme(ScreenId.PROFILE, modeChoice)
+                                    } else {
+                                        onApplyThemeWithScope(scopeChoice, modeChoice, ScreenId.PROFILE, shownTheme)
+                                    }
                                 },
-                                shape = CircleShape,
-                                color = if (cacheCleared) BrandColors.Matcha else BrandColors.SurfaceContainerHigh,
-                                modifier = Modifier.testTag("profile_clear_cache_btn")
+                            shape = RoundedCornerShape(16.dp),
+                            color = palette.primary
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 11.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+                                Icon(Icons.Filled.Check, contentDescription = null, tint = palette.onPrimary, modifier = Modifier.size(15.dp))
+                                Spacer(Modifier.width(5.dp))
                                 Text(
-                                    text = if (cacheCleared) "Cleared ✓" else "Clear Cache",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = BrandColors.OnSurfaceDark,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
+                                    text = if (scopeChoice == ThemeApplyScope.SINGLE_PAGE) {
+                                        "Applied to Profile (${modeChoice.name})"
+                                    } else {
+                                        "Apply ${shownTheme.displayName} (${modeChoice.name})"
+                                    },
+                                    fontFamily = BodyFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 11.5.sp,
+                                    color = palette.onPrimary
                                 )
                             }
                         }
+
+                        Surface(
+                            modifier = Modifier
+                                .testTag("profile_reset_day_themes")
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable { onResetDayThemes() },
+                            shape = RoundedCornerShape(16.dp),
+                            color = palette.surfaceElevated,
+                            border = BorderStroke(1.dp, borderColor)
+                        ) {
+                            Box(
+                                modifier = Modifier.padding(horizontal = 13.dp, vertical = 11.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Filled.Refresh, contentDescription = "Reset themes", tint = MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(16.dp))
+                            }
+                        }
                     }
                 }
             }
         }
 
-        // 6. Version Footer
+        // Adaptive Elemental Ambient Soundscapes Card
         item {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            AmbientSoundscapeSettingsCard(
+                activeTheme = activeElement,
+                enabled = uiState.ambientSoundEnabled,
+                volume = uiState.ambientSoundVolume,
+                oledMode = oledMode,
+                onToggleEnabled = onToggleAmbientSound,
+                onVolumeChange = onSetAmbientSoundVolume,
+                onSelectTheme = { chosen ->
+                    onApplyThemeWithScope(
+                        ThemeApplyScope.ENTIRE_APP,
+                        if (oledMode) ThemeModeSlot.DARK else ThemeModeSlot.LIGHT,
+                        ScreenId.PROFILE,
+                        chosen
+                    )
+                }
+            )
+        }
+
+        // Voice Persona Acoustic EQ Selector
+        item {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(26.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, borderColor)
             ) {
-                Text("Built for mindful human connection", style = MaterialTheme.typography.bodySmall, color = textSecondary)
-                Text("OneReflection v2.4.1 (Native Android)", fontSize = 10.sp, color = textSecondary.copy(alpha = 0.7f))
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Filled.GraphicEq, contentDescription = null, tint = palette.primary, modifier = Modifier.size(18.dp))
+                        Text(
+                            text = "Voice Persona EQ",
+                            fontFamily = DisplayFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 19.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        personas.forEachIndexed { idx, label ->
+                            val selected = selectedPersona == idx
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .testTag("profile_persona_$idx")
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        selectedPersona = idx
+                                        onPlayChime(ChimeType.TIBETAN)
+                                    },
+                                shape = RoundedCornerShape(16.dp),
+                                color = if (selected) palette.primary else palette.surfaceElevated,
+                                border = BorderStroke(1.dp, if (selected) Color.Transparent else borderColor)
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(vertical = 11.dp, horizontal = 6.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = label,
+                                        fontFamily = BodyFontFamily,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 11.5.sp,
+                                        color = if (selected) palette.onPrimary else MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Harmony & Privacy Preferences
+        item {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(26.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, borderColor)
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "HARMONY & PRIVACY VAULT",
+                        fontFamily = MonoFontFamily,
+                        fontSize = 10.sp,
+                        letterSpacing = 1.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    ProfileToggleRow(
+                        icon = Icons.Filled.Mic,
+                        title = "Spatial Voice Clarity",
+                        subtitle = "Warm acoustic EQ for wake-up memos",
+                        checked = spatialAudio,
+                        testTag = "profile_spatial_switch",
+                        onToggle = {
+                            spatialAudio = !spatialAudio
+                            onPlayChime(ChimeType.CLICK)
+                        }
+                    )
+                    ProfileToggleRow(
+                        icon = Icons.Filled.NotificationsActive,
+                        title = "Mindful Haptic Pulses",
+                        subtitle = "Soft sunrise ramp before voice chimes",
+                        checked = gentleHaptics,
+                        testTag = "profile_haptics_switch",
+                        onToggle = {
+                            gentleHaptics = !gentleHaptics
+                            onPlayChime(ChimeType.CLICK)
+                        }
+                    )
+                    ProfileToggleRow(
+                        icon = Icons.Filled.Lock,
+                        title = "End-to-End Voice Vault",
+                        subtitle = "Zero-knowledge keys for Inner Circle",
+                        checked = encryptedVault,
+                        testTag = "profile_vault_switch",
+                        onToggle = {
+                            encryptedVault = !encryptedVault
+                            onPlayChime(ChimeType.CLICK)
+                        }
+                    )
+                }
+            }
+        }
+
+        // Quick Actions Row
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("profile_open_bedtime")
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable { onOpenBedtimeSync() },
+                    shape = RoundedCornerShape(20.dp),
+                    color = palette.surfaceTint,
+                    border = BorderStroke(1.dp, palette.border)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(vertical = 14.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Bedtime, contentDescription = null, tint = palette.primary, modifier = Modifier.size(17.dp))
+                        Text("  Bedtime Rules", fontWeight = FontWeight.Bold, fontSize = 12.5.sp, color = palette.primary)
+                    }
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("profile_open_voice")
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable { onOpenVoiceStudio() },
+                    shape = RoundedCornerShape(20.dp),
+                    color = palette.primary
+                ) {
+                    Row(
+                        modifier = Modifier.padding(vertical = 14.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Mic, contentDescription = null, tint = palette.onPrimary, modifier = Modifier.size(17.dp))
+                        Text("  Voice Studio", fontWeight = FontWeight.Bold, fontSize = 12.5.sp, color = palette.onPrimary)
+                    }
+                }
+            }
+        }
+
+        // Brand Footer
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Filled.Verified, contentDescription = null, tint = OneReflectionColors.SageDeep, modifier = Modifier.size(14.dp))
+                Text(
+                    text = "  OneReflection v2.4.1 • Elemental Sanctuary",
+                    fontFamily = MonoFontFamily,
+                    fontSize = 10.5.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
 }
 
 @Composable
+private fun ProfileStatPill(value: String, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            fontFamily = MonoFontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 19.sp,
+            color = Color.White
+        )
+        Text(
+            text = label,
+            fontFamily = MonoFontFamily,
+            fontSize = 9.5.sp,
+            letterSpacing = 0.8.sp,
+            color = Color(0xFFB5ACA3)
+        )
+    }
+}
+
+@Composable
 private fun ProfileToggleRow(
-    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    subtitle: String,
     checked: Boolean,
-    activeColor: Color,
-    onCheckedChange: (Boolean) -> Unit
+    testTag: String,
+    onToggle: () -> Unit
 ) {
-    Surface(shape = RoundedCornerShape(16.dp), color = Color.White.copy(alpha = 0.9f)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = BrandColors.OnSurfaceDark, modifier = Modifier.weight(1f))
-            OneReflectionSwitch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                checkedTrackColor = activeColor
+    val palette = LocalElementalPalette.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = palette.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                fontFamily = BodyFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = subtitle,
+                fontFamily = BodyFontFamily,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+        OneReflectionSwitch(
+            checked = checked,
+            onCheckedChange = onToggle,
+            activeTrackColor = palette.primary,
+            testTag = testTag
+        )
     }
 }

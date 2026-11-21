@@ -1,16 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OneReflection</string>
-    <string name="app_tagline">One app. One connection. Every moment matters.</string>
     <string name="nav_home">Home</string>
     <string name="nav_alarms">Alarms</string>
     <string name="nav_tasks">Tasks</string>
     <string name="nav_chats">Chats</string>
     <string name="nav_circle">Circle</string>
-    <string name="cd_open_navigator">Toggle Screen Navigator</string>
-    <string name="cd_toggle_oled">Toggle OLED Pure Black Mode</string>
+    <string name="cd_toggle_navigator">Open screen navigator</string>
+    <string name="cd_toggle_oled">Toggle OLED Pure Black mode</string>
     <string name="cd_notifications">Notifications</string>
-    <string name="cd_user_profile">User Profile</string>
-    <string name="cd_create_voice">Create new voice entry or task</string>
-    <string name="cd_play_audio">Play or pause audio</string>
-    <string name="cd_close">Close</string>
+    <string name="cd_profile">Profile</string>
+    <string name="cd_open_voice_studio">Open Voice Studio</string>
+    <string name="cd_toggle_ambient_sound">Toggle elemental ambient soundscape</string>
+    <string name="cd_expand_ambient_mixer">Adjust ambient soundscape volume</string>
+    <string name="ambient_sound_on">Ambient On</string>
+    <string name="ambient_sound_off">Soundscape</string>
+    <string name="ambient_sound_studio_title">Elemental Soundscapes</string>
+    <string name="share_tree_button">Share</string>
+    <string name="cd_share_flow_garden_tree">Share Flow Garden tree image</string>
+    <string name="share_tree_chooser_title">Share Flow Garden Tree</string>
+    <string name="streak_eyebrow">FLOW GARDEN · DAILY STREAK</string>
+    <string name="streak_days_label">CONSECUTIVE DAYS</string>
+    <string name="streak_day_singular">CONSECUTIVE DAY</string>
+    <string name="streak_perfect_badge">PERFECT DAY</string>
+    <string name="streak_secured_badge">TODAY SECURED</string>
+    <string name="cd_streak_flame">Daily habit goal streak emblem</string>
 </resources>

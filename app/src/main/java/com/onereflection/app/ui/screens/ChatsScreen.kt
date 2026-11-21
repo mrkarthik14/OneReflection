@@ -3,138 +3,333 @@ package com.onereflection.app.ui.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.GraphicEq
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.onereflection.app.data.ChimePlayer
-import com.onereflection.app.model.*
+import com.onereflection.app.model.AvatarUrls
+import com.onereflection.app.model.ChimeType
+import com.onereflection.app.model.OneReflectionUiState
+import com.onereflection.app.model.ScreenId
 import com.onereflection.app.ui.components.AvatarImage
 import com.onereflection.app.ui.components.WaveformVisualizer
-import com.onereflection.app.ui.theme.BrandColors
-import com.onereflection.app.viewmodel.OneReflectionUiState
+import com.onereflection.app.ui.theme.BodyFontFamily
+import com.onereflection.app.ui.theme.DisplayFontFamily
+import com.onereflection.app.ui.theme.MonoFontFamily
+import com.onereflection.app.ui.theme.OneReflectionColors
 import kotlinx.coroutines.delay
 
 @Composable
 fun ChatsScreen(
-    state: OneReflectionUiState,
+    uiState: OneReflectionUiState,
     onNavigate: (ScreenId) -> Unit,
-    onBack: () -> Unit,
-    onOpenVoiceStudio: () -> Unit
+    onOpenVoiceStudio: () -> Unit,
+    onPlayChime: (ChimeType) -> Unit,
+    onStopChime: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    BackHandler { onNavigate(ScreenId.HOME) }
 
-    val oledMode = state.oledMode
-    var searchQuery by remember { mutableStateOf("") }
-    var activeFilter by remember { mutableStateOf("all") }
-    var isPlayingDispatch by remember { mutableStateOf(false) }
-    var speedMultiplier by remember { mutableStateOf("1.5x") }
+    var activeFilter by remember { mutableStateOf("All Circles") }
+    var isPlayingMaya by remember { mutableStateOf(false) }
+    var playbackSpeedIndex by remember { mutableIntStateOf(0) }
     var sourdoughChecked by remember { mutableStateOf(false) }
-    var walkieActive by remember { mutableStateOf(false) }
+    var walkieLive by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isPlayingDispatch) {
-        if (isPlayingDispatch) {
-            delay(4200L)
-            isPlayingDispatch = false
+    val speeds = listOf("1.0x", "1.5x", "2.0x")
+
+    LaunchedEffect(isPlayingMaya) {
+        if (isPlayingMaya) {
+            delay(5000L)
+            isPlayingMaya = false
+            onStopChime()
         }
     }
 
-    val textPrimary = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-    val textSecondary = if (oledMode) Color(0xFFA1A1AA) else BrandColors.OnSurfaceVariant
-    val cardBorder = if (oledMode) BrandColors.OledBorder else Color.Black.copy(alpha = 0.05f)
+    val oledMode = uiState.oledMode
+    val cardBg = if (oledMode) OneReflectionColors.OledSurface else OneReflectionColors.SurfaceCard
+    val borderColor = if (oledMode) OneReflectionColors.OledBorder else OneReflectionColors.HairlineLight
+    val filters = listOf("All Circles", "Maya R.", "Studio Circle", "Family")
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 110.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 148.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 1. Header & Search
+        // Editorial Header
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = "VOICE-FIRST DISPATCHES",
+                    fontFamily = MonoFontFamily,
+                    fontSize = 10.5.sp,
+                    letterSpacing = 1.2.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "Chats & Circles.",
+                    fontFamily = DisplayFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 31.sp,
+                    letterSpacing = (-0.6).sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }
+
+        // Circle Filter Strip
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                filters.forEach { label ->
+                    val selected = activeFilter == label
+                    Surface(
                         modifier = Modifier
+                            .testTag("chats_filter_${label.lowercase().replace(" ", "_")}")
                             .clip(CircleShape)
-                            .background(BrandColors.ButterYellow)
-                            .padding(horizontal = 12.dp, vertical = 5.dp)
+                            .clickable { activeFilter = label },
+                        shape = CircleShape,
+                        color = when {
+                            selected && oledMode -> OneReflectionColors.TerracottaLight
+                            selected -> OneReflectionColors.InkPrimary
+                            oledMode -> OneReflectionColors.OledSurface
+                            else -> OneReflectionColors.SurfaceCard
+                        },
+                        border = BorderStroke(1.dp, if (selected) Color.Transparent else borderColor)
                     ) {
                         Text(
-                            text = "IN SYNC • SHARED VOICES",
-                            fontSize = 10.sp,
+                            text = label,
+                            fontFamily = BodyFontFamily,
                             fontWeight = FontWeight.Bold,
-                            color = BrandColors.ButterYellowText
+                            fontSize = 12.5.sp,
+                            color = when {
+                                selected && oledMode -> OneReflectionColors.InkPrimary
+                                selected -> Color.White
+                                else -> MaterialTheme.colorScheme.onBackground
+                            },
+                            modifier = Modifier.padding(horizontal = 15.dp, vertical = 9.dp)
                         )
                     }
-                    Surface(
-                        onClick = { ChimePlayer.play(ChimeType.NORDIC) },
-                        shape = CircleShape,
-                        color = BrandColors.PinkFixed,
-                        modifier = Modifier.size(34.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.GraphicEq, contentDescription = "Acoustic ping", tint = BrandColors.PrimaryPlum, modifier = Modifier.size(16.dp))
-                        }
-                    }
                 }
+            }
+        }
 
-                Column {
-                    Text("Chats & Circles", style = MaterialTheme.typography.headlineLarge, color = textPrimary)
-                    Text("Gentle whispers, quick pings, and shared daily rhythms.", style = MaterialTheme.typography.bodySmall, color = textSecondary)
-                }
-
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    placeholder = { Text("Search voice notes, circles, rituals...", style = MaterialTheme.typography.bodySmall) },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    singleLine = true,
-                    shape = CircleShape,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+        // Featured Maya Voice Dispatch Card
+        item {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("chats_maya_dispatch_card"),
+                shape = RoundedCornerShape(28.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, if (oledMode) OneReflectionColors.GoldLuminous.copy(alpha = 0.24f) else OneReflectionColors.Terracotta.copy(alpha = 0.25f)),
+                shadowElevation = if (oledMode) 0.dp else 3.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    listOf("all" to "All Circles", "memos" to "Voice Memos", "tasks" to "Shared Tasks", "family" to "Family").forEach { (id, label) ->
-                        val sel = activeFilter == id
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(11.dp)
+                        ) {
+                            AvatarImage(
+                                url = AvatarUrls.MAYA,
+                                fallbackInitials = "MR",
+                                contentDescription = "Maya R.",
+                                size = 44.dp,
+                                ringColor = OneReflectionColors.Terracotta,
+                                ringWidth = 1.6.dp
+                            )
+                            Column {
+                                Text(
+                                    text = "Maya R.",
+                                    fontFamily = DisplayFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "VOICE DISPATCH • 2M AGO",
+                                    fontFamily = MonoFontFamily,
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
                         Surface(
-                            onClick = {
-                                ChimePlayer.play(ChimeType.CLICK)
-                                activeFilter = id
-                            },
+                            modifier = Modifier
+                                .testTag("chats_speed_toggle")
+                                .clip(CircleShape)
+                                .clickable {
+                                    playbackSpeedIndex = (playbackSpeedIndex + 1) % speeds.size
+                                    onPlayChime(ChimeType.CLICK)
+                                },
                             shape = CircleShape,
-                            color = if (sel) BrandColors.OnSurfaceDark else if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerHigh
+                            color = if (oledMode) OneReflectionColors.OledSurfaceElevated else OneReflectionColors.PeachMist
                         ) {
                             Text(
-                                text = label,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = if (sel) Color.White else textSecondary,
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                                text = speeds[playbackSpeedIndex],
+                                fontFamily = MonoFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 11.sp,
+                                color = if (oledMode) OneReflectionColors.TerracottaLight else OneReflectionColors.Terracotta,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                            )
+                        }
+                    }
+
+                    // Audio Player Strip
+                    Surface(
+                        shape = RoundedCornerShape(18.dp),
+                        color = if (oledMode) OneReflectionColors.OledSurfaceElevated else OneReflectionColors.SurfaceWarm
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .testTag("chats_play_maya_button")
+                                    .clip(CircleShape)
+                                    .background(OneReflectionColors.Terracotta)
+                                    .clickable {
+                                        if (isPlayingMaya) {
+                                            isPlayingMaya = false
+                                            onStopChime()
+                                        } else {
+                                            isPlayingMaya = true
+                                            onPlayChime(ChimeType.TIBETAN)
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = if (isPlayingMaya) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                                    contentDescription = if (isPlayingMaya) "Pause Maya voice note" else "Play Maya voice note",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            WaveformVisualizer(
+                                isPlaying = isPlayingMaya,
+                                barCount = 20,
+                                height = 26.dp,
+                                mixedColors = true,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            Text(
+                                text = "0:24",
+                                fontFamily = MonoFontFamily,
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = "\"Hey! Picked up fresh rosemary sourdough on my way back. Should I set our bedtime horizon for 22:30 tonight?\"",
+                        fontFamily = DisplayFontFamily,
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                    // Inline Actionable Task Chip
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("chats_inline_sourdough_check")
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable {
+                                sourdoughChecked = !sourdoughChecked
+                                onPlayChime(ChimeType.CLICK)
+                            },
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (oledMode) Color(0xFF142722) else OneReflectionColors.SageMist
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(22.dp)
+                                    .clip(CircleShape)
+                                    .background(if (sourdoughChecked) OneReflectionColors.SageDeep else Color.Transparent)
+                                    .border(1.8.dp, OneReflectionColors.SageDeep, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (sourdoughChecked) {
+                                    Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(13.dp))
+                                }
+                            }
+                            Text(
+                                text = "Confirm organic sourdough & espresso pickup",
+                                fontFamily = BodyFontFamily,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                textDecoration = if (sourdoughChecked) TextDecoration.LineThrough else TextDecoration.None,
+                                color = if (oledMode) OneReflectionColors.SageMist else OneReflectionColors.SageDeep
                             )
                         }
                     }
@@ -142,475 +337,153 @@ fun ChatsScreen(
             }
         }
 
-        // 2. Active Circle Presence
+        // Signature Obsidian Live Walkie Channel Card
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Your Circle", style = MaterialTheme.typography.titleMedium, color = textPrimary)
-                        Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(BrandColors.ButterYellow)
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        ) {
-                            Text("5 online", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.ButterYellowText)
-                        }
-                    }
-                    Text(
-                        text = "Manage ›",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = if (oledMode) BrandColors.CandyPink else BrandColors.PrimaryPlum,
-                        modifier = Modifier.clickable { onNavigate(ScreenId.PEOPLE) }
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable { onNavigate(ScreenId.PEOPLE) }
-                    ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = if (oledMode) BrandColors.OledCard else Color.White,
-                            border = BorderStroke(1.dp, cardBorder),
-                            modifier = Modifier.size(56.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.PersonAdd, contentDescription = "Invite", tint = textPrimary)
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text("Invite", style = MaterialTheme.typography.bodySmall, color = textSecondary)
-                    }
-                    CircleAvatarBadge("Maya", "Awake", AVATAR_MAYA, "MR", BrandColors.CandyPink, textPrimary, textSecondary)
-                    CircleAvatarBadge("Leo", "Sprint", AVATAR_LEO, "LC", BrandColors.LavenderContainer, textPrimary, textSecondary)
-                    CircleAvatarBadge("Sofia", "Listening", AVATAR_SOFIA, "SM", BrandColors.ButterYellow, textPrimary, textSecondary)
-                }
-            }
-        }
-
-        // 3. Featured Maya R. Candy Pink Bento Card
-        if (searchQuery.isBlank() || "maya sourdough morning voice".contains(searchQuery.lowercase())) {
-            item {
-                Surface(
-                    shape = RoundedCornerShape(28.dp),
-                    color = BrandColors.CandyPink,
-                    border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.08f))
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth().padding(18.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                AvatarImage(AVATAR_MAYA, "MR", "Maya R.", 44.dp)
-                                Column {
-                                    Text("Maya R.", style = MaterialTheme.typography.titleMedium, color = BrandColors.OnSurfaceDark)
-                                    Text("Partner • In Deep Flow", style = MaterialTheme.typography.bodySmall, color = BrandColors.CandyPinkDeep)
-                                }
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .background(BrandColors.OnSurfaceDark)
-                                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                            ) {
-                                Text("1 new memo", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                            }
-                        }
-
-                        // Voice Note Waveform Player
-                        Surface(
-                            shape = RoundedCornerShape(20.dp),
-                            color = Color.White.copy(alpha = 0.92f)
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxWidth().padding(14.dp),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                                        Icon(Icons.Default.RecordVoiceOver, contentDescription = null, tint = BrandColors.PrimaryPlum, modifier = Modifier.size(16.dp))
-                                        Text("Morning Voice Dispatch", style = MaterialTheme.typography.labelMedium, color = BrandColors.OnSurfaceDark)
-                                    }
-                                    Text("0:38 / 1:12", style = MaterialTheme.typography.bodySmall, color = BrandColors.OnSurfaceVariant)
-                                }
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Surface(
-                                        onClick = {
-                                            if (!isPlayingDispatch) {
-                                                ChimePlayer.play(ChimeType.TIBETAN)
-                                                isPlayingDispatch = true
-                                            } else {
-                                                ChimePlayer.stop()
-                                                isPlayingDispatch = false
-                                            }
-                                        },
-                                        shape = CircleShape,
-                                        color = if (isPlayingDispatch) BrandColors.PrimaryPlum else BrandColors.OnSurfaceDark,
-                                        modifier = Modifier.size(40.dp).testTag("chats_maya_play")
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Icon(
-                                                imageVector = if (isPlayingDispatch) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                                contentDescription = "Play voice dispatch",
-                                                tint = Color.White,
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        }
-                                    }
-
-                                    WaveformVisualizer(
-                                        isPlaying = isPlayingDispatch,
-                                        barCount = 18,
-                                        height = 30.dp,
-                                        modifier = Modifier.weight(1f)
-                                    )
-
-                                    Surface(
-                                        onClick = {
-                                            ChimePlayer.play(ChimeType.CLICK)
-                                            speedMultiplier = when (speedMultiplier) {
-                                                "1.0x" -> "1.5x"
-                                                "1.5x" -> "2.0x"
-                                                else -> "1.0x"
-                                            }
-                                        },
-                                        shape = CircleShape,
-                                        color = BrandColors.SurfaceContainerHigh
-                                    ) {
-                                        Text(
-                                            text = speedMultiplier,
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = BrandColors.OnSurfaceDark,
-                                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp)
-                                        )
-                                    }
-                                }
-
-                                Text(
-                                    text = "“Sending gentle morning energy! I also attached our dinner sourdough grocery to-do.”",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontStyle = FontStyle.Italic,
-                                    color = BrandColors.OnSurfaceDark
-                                )
-                            }
-                        }
-
-                        // Embedded Shared Task Chip
-                        Surface(
-                            shape = RoundedCornerShape(18.dp),
-                            color = Color.White.copy(alpha = 0.95f)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(34.dp)
-                                            .clip(RoundedCornerShape(10.dp))
-                                            .background(BrandColors.ButterYellow),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(Icons.Default.ShoppingBag, contentDescription = null, tint = BrandColors.ButterYellowText, modifier = Modifier.size(18.dp))
-                                    }
-                                    Column {
-                                        Text(
-                                            text = "Pick up artisan sourdough",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            textDecoration = if (sourdoughChecked) TextDecoration.LineThrough else TextDecoration.None,
-                                            color = if (sourdoughChecked) BrandColors.OnSurfaceVariant else BrandColors.OnSurfaceDark
-                                        )
-                                        Text("Shared To-Do • 2 items remaining", fontSize = 10.sp, color = BrandColors.OnSurfaceVariant)
-                                    }
-                                }
-
-                                Surface(
-                                    onClick = {
-                                        ChimePlayer.play(ChimeType.CLICK)
-                                        sourdoughChecked = !sourdoughChecked
-                                    },
-                                    shape = CircleShape,
-                                    color = if (sourdoughChecked) BrandColors.OnSurfaceDark else BrandColors.SurfaceContainerHigh,
-                                    modifier = Modifier.size(30.dp)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            Icons.Default.Check,
-                                            contentDescription = "Toggle sourdough task",
-                                            tint = if (sourdoughChecked) Color.White else BrandColors.OnSurfaceDark,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("Delivered 2m ago", style = MaterialTheme.typography.bodySmall, color = BrandColors.CandyPinkDeep)
-                            Button(
-                                onClick = onOpenVoiceStudio,
-                                shape = CircleShape,
-                                colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
-                            ) {
-                                Icon(Icons.Default.Reply, contentDescription = null, modifier = Modifier.size(15.dp))
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text("Reply", style = MaterialTheme.typography.labelMedium)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 4. Recent Channels
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Recent Channels", style = MaterialTheme.typography.titleMedium, color = textPrimary)
-                    Text("UPDATED NOW", style = MaterialTheme.typography.labelSmall, color = textSecondary)
-                }
-
-                // Studio Dev Sync (Lavender)
-                if (activeFilter == "all" || activeFilter == "memos" || activeFilter == "tasks") {
-                    ChannelCard(
-                        title = "Studio Dev Sync",
-                        subtitle = "Sprint 14 Sync Hub",
-                        time = "11:20 AM",
-                        message = "Leo: “Compose migration looks solid on staging...”",
-                        badge = "0:45s",
-                        bg = BrandColors.LavenderSoft,
-                        textColor = BrandColors.LavenderText,
-                        subColor = BrandColors.LavenderMuted,
-                        onClick = { ChimePlayer.play(ChimeType.NORDIC) }
-                    )
-                }
-
-                // Sofia Miller (Butter Yellow)
-                if (activeFilter == "all" || activeFilter == "tasks") {
-                    ChannelCard(
-                        title = "Sofia Miller",
-                        subtitle = "Mindful Rhythm Buddy",
-                        time = "Yesterday",
-                        message = "Shared a completed ritual: Hydration Goal (+500ml)",
-                        badge = "7d Streak",
-                        bg = BrandColors.ButterYellow,
-                        textColor = BrandColors.OnSurfaceDark,
-                        subColor = BrandColors.ButterYellowText,
-                        onClick = { ChimePlayer.play(ChimeType.WATER) }
-                    )
-                }
-
-                // Mom & Family Hub
-                if (activeFilter == "all" || activeFilter == "family") {
-                    ChannelCard(
-                        title = "Mom & Family Hub",
-                        subtitle = "Scheduled Morning Routine",
-                        time = "May 14",
-                        message = "Scheduled Voice Wake-up set for Sunday 08:30 AM",
-                        badge = "Ready",
-                        bg = if (oledMode) BrandColors.OledCard else Color.White,
-                        textColor = textPrimary,
-                        subColor = textSecondary,
-                        onClick = { ChimePlayer.play(ChimeType.SOLFEGGIO) }
-                    )
-                }
-            }
-        }
-
-        // 5. Hold to Talk Walkie-Talkie Dock
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Surface(
-                    shape = RoundedCornerShape(26.dp),
-                    color = if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerHigh,
-                    border = BorderStroke(1.dp, cardBorder)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("chats_walkie_card"),
+                shape = RoundedCornerShape(28.dp),
+                color = if (oledMode) OneReflectionColors.OledSurface else OneReflectionColors.InkPrimary,
+                border = BorderStroke(1.dp, OneReflectionColors.GoldLuminous.copy(alpha = 0.3f))
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp)
-                                .clip(CircleShape)
-                                .background(if (walkieActive) BrandColors.PrimaryPlum else BrandColors.OnSurfaceDark)
-                                .pointerInput(Unit) {
-                                    detectTapGestures(
-                                        onPress = {
-                                            ChimePlayer.play(ChimeType.CLICK)
-                                            walkieActive = true
-                                            tryAwaitRelease()
-                                            ChimePlayer.play(ChimeType.SOLFEGGIO)
-                                            walkieActive = false
-                                        }
-                                    )
-                                }
-                                .testTag("chats_walkie_talkie_btn"),
-                            contentAlignment = Alignment.Center
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier.size(26.dp).clip(CircleShape).background(BrandColors.CandyPink),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(Icons.Default.Mic, contentDescription = null, tint = BrandColors.OnSurfaceDark, modifier = Modifier.size(15.dp))
-                                }
-                                Text(
-                                    text = if (walkieActive) "Transmitting Live..." else "Hold to Talk",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = Color.White
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Filled.RadioButtonChecked,
+                                contentDescription = "Live status",
+                                tint = if (walkieLive) OneReflectionColors.TerracottaLight else OneReflectionColors.GoldLuminous,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Text(
+                                text = if (walkieLive) "TRANSMITTING LIVE" else "LIVE WALKIE CHANNEL",
+                                fontFamily = MonoFontFamily,
+                                fontSize = 10.sp,
+                                letterSpacing = 1.sp,
+                                color = if (walkieLive) OneReflectionColors.TerracottaLight else OneReflectionColors.GoldLuminous
+                            )
+                        }
+                        Text(
+                            text = "3 IN ROOM",
+                            fontFamily = MonoFontFamily,
+                            fontSize = 10.sp,
+                            color = Color(0xFFA79F97)
+                        )
+                    }
+
+                    Text(
+                        text = "Evening Sanctuary Lounge",
+                        fontFamily = DisplayFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 21.sp,
+                        color = Color.White
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(horizontalArrangement = Arrangement.spacedBy((-8).dp)) {
+                            AvatarImage(url = AvatarUrls.MAYA, fallbackInitials = "MR", contentDescription = "Maya", size = 36.dp, ringColor = OneReflectionColors.GoldLuminous, ringWidth = 1.5.dp)
+                            AvatarImage(url = AvatarUrls.LEO, fallbackInitials = "LC", contentDescription = "Leo", size = 36.dp, ringColor = OneReflectionColors.InkPrimary, ringWidth = 1.5.dp)
+                            AvatarImage(url = AvatarUrls.SOFIA, fallbackInitials = "SM", contentDescription = "Sofia", size = 36.dp, ringColor = OneReflectionColors.InkPrimary, ringWidth = 1.5.dp)
                         }
 
                         Surface(
-                            onClick = { onNavigate(ScreenId.PEOPLE) },
+                            modifier = Modifier
+                                .testTag("chats_walkie_toggle_button")
+                                .clip(CircleShape)
+                                .clickable {
+                                    walkieLive = !walkieLive
+                                    if (walkieLive) onPlayChime(ChimeType.NORDIC) else onStopChime()
+                                },
                             shape = CircleShape,
-                            color = if (oledMode) Color(0xFF27272A) else Color.White,
-                            modifier = Modifier.height(50.dp)
+                            color = if (walkieLive) OneReflectionColors.Terracotta else OneReflectionColors.GoldLuminous
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 14.dp),
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                Icon(Icons.Default.AddCircle, contentDescription = null, tint = textPrimary, modifier = Modifier.size(16.dp))
-                                Text("New Circle", style = MaterialTheme.typography.labelMedium, color = textPrimary)
+                                Icon(
+                                    imageVector = if (walkieLive) Icons.Filled.GraphicEq else Icons.Filled.Mic,
+                                    contentDescription = "Toggle walkie",
+                                    tint = if (walkieLive) Color.White else OneReflectionColors.InkPrimary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = if (walkieLive) "Mute Mic" else "Tap to Talk",
+                                    fontFamily = BodyFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.5.sp,
+                                    color = if (walkieLive) Color.White else OneReflectionColors.InkPrimary
+                                )
                             }
                         }
                     }
                 }
-                Text(
-                    text = "End-to-end encrypted audio bubbles • Keep audio notes mindful & sweet",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = textSecondary,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
             }
         }
-    }
-}
 
-@Composable
-private fun CircleAvatarBadge(
-    name: String,
-    status: String,
-    url: String,
-    initials: String,
-    ringColor: Color,
-    textPrimary: Color,
-    textSecondary: Color
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        AvatarImage(url, initials, name, 56.dp, ringColor = ringColor, ringWidth = 2.5.dp)
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(name, style = MaterialTheme.typography.labelMedium, color = textPrimary)
-        Text(status, fontSize = 10.sp, color = textSecondary)
-    }
-}
-
-@Composable
-private fun ChannelCard(
-    title: String,
-    subtitle: String,
-    time: String,
-    message: String,
-    badge: String,
-    bg: Color,
-    textColor: Color,
-    subColor: Color,
-    onClick: () -> Unit
-) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(24.dp),
-        color = bg,
-        border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.06f))
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(title, style = MaterialTheme.typography.titleMedium, color = textColor)
-                    Text(subtitle, style = MaterialTheme.typography.bodySmall, color = subColor)
-                }
-                Text(time, fontSize = 10.sp, color = subColor)
-            }
+        // Studio Circle Update Card
+        item {
             Surface(
-                shape = RoundedCornerShape(14.dp),
-                color = Color.White.copy(alpha = 0.85f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .clickable { onOpenVoiceStudio() },
+                shape = RoundedCornerShape(24.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, borderColor)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 9.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = BrandColors.OnSurfaceDark,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                    AvatarImage(
+                        url = AvatarUrls.LEO,
+                        fallbackInitials = "LC",
+                        contentDescription = "Leo Chen",
+                        size = 44.dp
                     )
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrandColors.PinkFixed)
-                            .padding(horizontal = 8.dp, vertical = 3.dp)
-                    ) {
-                        Text(badge, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.PrimaryPlum)
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Design Studio Circle",
+                                fontFamily = DisplayFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = "14:20",
+                                fontFamily = MonoFontFamily,
+                                fontSize = 10.5.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Text(
+                            text = "Leo shared a 0:19 audio note on Q3 voice flows",
+                            fontFamily = BodyFontFamily,
+                            fontSize = 12.5.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }

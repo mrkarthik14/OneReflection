@@ -1,10 +1,18 @@
 package com.onereflection.app.ui.theme
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -13,262 +21,662 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.onereflection.app.R
 import com.onereflection.app.model.CategoryColor
+import com.onereflection.app.model.ElementalTheme
+import com.onereflection.app.model.TaskPriority
+import java.util.Locale
 
-object BrandColors {
-    val SurfaceWarm = Color(0xFFFCF9F8)
-    val SurfaceContainerLow = Color(0xFFF6F3F2)
-    val SurfaceContainer = Color(0xFFF0EDED)
-    val SurfaceContainerHigh = Color(0xFFEAE7E7)
-    val SurfaceContainerHighest = Color(0xFFE5E2E1)
-    val OnSurfaceDark = Color(0xFF1C1B1B)
-    val OnSurfaceVariant = Color(0xFF50434A)
-    val OutlineVariant = Color(0xFFD4C2C9)
+val SanctuaryEase = CubicBezierEasing(0.22f, 1f, 0.36f, 1f)
+val SanctuaryPageEase = CubicBezierEasing(0.16f, 1f, 0.3f, 1f)
 
-    val OledBlack = Color(0xFF000000)
-    val OledSurface = Color(0xFF121214)
-    val OledCard = Color(0xFF17171A)
-    val OledBorder = Color(0xFF26262A)
+data class ElementalThemePalette(
+    val theme: ElementalTheme,
+    val isDark: Boolean,
+    val darkProgress: Float = if (isDark) 1f else 0f,
+    val primary: Color,
+    val primaryBright: Color,
+    val secondary: Color,
+    val glowCore: Color,
+    val glowOuter: Color,
+    val onPrimary: Color,
+    val pageBgTop: Color,
+    val pageBgMid: Color,
+    val pageBgBottom: Color,
+    val surfaceCard: Color,
+    val surfaceElevated: Color,
+    val border: Color,
+    val inkPrimary: Color,
+    val inkSecondary: Color,
+    val heroStart: Color,
+    val heroEnd: Color,
+    val surfaceTint: Color
+)
 
-    val PrimaryPlum = Color(0xFF864B70)
-    val CandyPink = Color(0xFFF5ACD7)
-    val CandyPinkDeep = Color(0xFF753C61)
-    val PinkFixed = Color(0xFFFFD8EC)
-    val PinkFixedDim = Color(0xFFFAB0DC)
-    val DeepPlumText = Color(0xFF37062A)
+fun elementalPaletteFor(theme: ElementalTheme, oledMode: Boolean): ElementalThemePalette = when (theme) {
+    ElementalTheme.EMBER -> if (oledMode) {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = true,
+            primary = Color(0xFFFF632F),
+            primaryBright = Color(0xFFFF9E4D),
+            secondary = Color(0xFFFFD166),
+            glowCore = Color(0xFFFF7A29),
+            glowOuter = Color(0xFFD92614),
+            onPrimary = Color(0xFF1D0703),
+            pageBgTop = Color(0xFF180705),
+            pageBgMid = Color(0xFF110504),
+            pageBgBottom = Color(0xFF0A0303),
+            surfaceCard = Color(0xFF1E0D0A),
+            surfaceElevated = Color(0xFF2B1410),
+            border = Color(0xFF5A251B),
+            inkPrimary = Color(0xFFFFF4EE),
+            inkSecondary = Color(0xFFD4A79A),
+            heroStart = Color(0xFF42140B),
+            heroEnd = Color(0xFF1B0705),
+            surfaceTint = Color(0xFF33140E)
+        )
+    } else {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = false,
+            primary = Color(0xFFD93B1C),
+            primaryBright = Color(0xFFFF783B),
+            secondary = Color(0xFFE69119),
+            glowCore = Color(0xFFFF6E2E),
+            glowOuter = Color(0xFFFFB26B),
+            onPrimary = Color.White,
+            pageBgTop = Color(0xFFFFEFE7),
+            pageBgMid = Color(0xFFFFF7F3),
+            pageBgBottom = Color(0xFFFDEDE6),
+            surfaceCard = Color(0xFFFFFFFF),
+            surfaceElevated = Color(0xFFFFECE3),
+            border = Color(0xFFF2C8B6),
+            inkPrimary = Color(0xFF24110C),
+            inkSecondary = Color(0xFF70483D),
+            heroStart = Color(0xFF38120A),
+            heroEnd = Color(0xFF1E0805),
+            surfaceTint = Color(0xFFFCE6DC)
+        )
+    }
 
-    val SecondaryGold = Color(0xFF6F5D00)
-    val ButterYellow = Color(0xFFF9DF72)
-    val ButterYellowText = Color(0xFF736200)
-    val YellowFixed = Color(0xFFFCE275)
+    ElementalTheme.SOLAR -> if (oledMode) {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = true,
+            primary = Color(0xFFFFCE47),
+            primaryBright = Color(0xFFFFE98A),
+            secondary = Color(0xFFFF9F2E),
+            glowCore = Color(0xFFFFD859),
+            glowOuter = Color(0xFFCC8212),
+            onPrimary = Color(0xFF1C1302),
+            pageBgTop = Color(0xFF171104),
+            pageBgMid = Color(0xFF100C03),
+            pageBgBottom = Color(0xFF090702),
+            surfaceCard = Color(0xFF1D1609),
+            surfaceElevated = Color(0xFF2A200E),
+            border = Color(0xFF57421A),
+            inkPrimary = Color(0xFFFFFBF0),
+            inkSecondary = Color(0xFFD1BE94),
+            heroStart = Color(0xFF3D2C09),
+            heroEnd = Color(0xFF1A1305),
+            surfaceTint = Color(0xFF30240C)
+        )
+    } else {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = false,
+            primary = Color(0xFFC9820C),
+            primaryBright = Color(0xFFF6C236),
+            secondary = Color(0xFFE36E24),
+            glowCore = Color(0xFFFFCA3A),
+            glowOuter = Color(0xFFFFE799),
+            onPrimary = Color.White,
+            pageBgTop = Color(0xFFFFF5D9),
+            pageBgMid = Color(0xFFFFFBF0),
+            pageBgBottom = Color(0xFFFCF2DA),
+            surfaceCard = Color(0xFFFFFFFF),
+            surfaceElevated = Color(0xFFFFF3D4),
+            border = Color(0xFFEED7A3),
+            inkPrimary = Color(0xFF231A08),
+            inkSecondary = Color(0xFF6B5832),
+            heroStart = Color(0xFF362708),
+            heroEnd = Color(0xFF1B1405),
+            surfaceTint = Color(0xFFFFF1C7)
+        )
+    }
 
-    val TertiarySlateBlue = Color(0xFF4F5D85)
-    val LavenderContainer = Color(0xFFB3C1EF)
-    val LavenderSoft = Color(0xFFDAE2FF)
-    val LavenderText = Color(0xFF091A3E)
-    val LavenderMuted = Color(0xFF38466C)
+    ElementalTheme.BREEZE -> if (oledMode) {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = true,
+            primary = Color(0xFF52F5C8),
+            primaryBright = Color(0xFFA8FFE6),
+            secondary = Color(0xFF62C8FF),
+            glowCore = Color(0xFF6CF7D2),
+            glowOuter = Color(0xFF13876A),
+            onPrimary = Color(0xFF041C16),
+            pageBgTop = Color(0xFF041714),
+            pageBgMid = Color(0xFF03100E),
+            pageBgBottom = Color(0xFF020A09),
+            surfaceCard = Color(0xFF0B201C),
+            surfaceElevated = Color(0xFF122E28),
+            border = Color(0xFF22544A),
+            inkPrimary = Color(0xFFEEFFF9),
+            inkSecondary = Color(0xFF9AC9BC),
+            heroStart = Color(0xFF0C332B),
+            heroEnd = Color(0xFF061A16),
+            surfaceTint = Color(0xFF102E28)
+        )
+    } else {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = false,
+            primary = Color(0xFF15856B),
+            primaryBright = Color(0xFF4CE0B8),
+            secondary = Color(0xFF2D7BB5),
+            glowCore = Color(0xFF42DFB6),
+            glowOuter = Color(0xFFA8F2DE),
+            onPrimary = Color.White,
+            pageBgTop = Color(0xFFE0F7F1),
+            pageBgMid = Color(0xFFF2FBF8),
+            pageBgBottom = Color(0xFFE4F6F1),
+            surfaceCard = Color(0xFFFFFFFF),
+            surfaceElevated = Color(0xFFDCF3EC),
+            border = Color(0xFFB3E2D5),
+            inkPrimary = Color(0xFF0C211C),
+            inkSecondary = Color(0xFF3F695E),
+            heroStart = Color(0xFF0B2F27),
+            heroEnd = Color(0xFF071A16),
+            surfaceTint = Color(0xFFD9F3EB)
+        )
+    }
 
-    val Matcha = Color(0xFFB8E98E)
-    val MatchaDark = Color(0xFF2A4413)
-    val Lilac = Color(0xFFE7A2EE)
-    val LilacText = Color(0xFF531858)
-    val CyanSoft = Color(0xFFA5E8EF)
-    val CyanText = Color(0xFF0A4952)
+    ElementalTheme.BLOOM -> if (oledMode) {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = true,
+            primary = Color(0xFFFF75C8),
+            primaryBright = Color(0xFFFFBCE8),
+            secondary = Color(0xFFC58CFF),
+            glowCore = Color(0xFFFF82CE),
+            glowOuter = Color(0xFFAD2078),
+            onPrimary = Color(0xFF210516),
+            pageBgTop = Color(0xFF1A0616),
+            pageBgMid = Color(0xFF11040F),
+            pageBgBottom = Color(0xFF090208),
+            surfaceCard = Color(0xFF200C1D),
+            surfaceElevated = Color(0xFF2E1329),
+            border = Color(0xFF5D2653),
+            inkPrimary = Color(0xFFFFF2FA),
+            inkSecondary = Color(0xFFD2A3C7),
+            heroStart = Color(0xFF3E1036),
+            heroEnd = Color(0xFF1A0617),
+            surfaceTint = Color(0xFF32112D)
+        )
+    } else {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = false,
+            primary = Color(0xFFC72B84),
+            primaryBright = Color(0xFFFF78C4),
+            secondary = Color(0xFF8C4FC4),
+            glowCore = Color(0xFFFF74C3),
+            glowOuter = Color(0xFFFFC4E6),
+            onPrimary = Color.White,
+            pageBgTop = Color(0xFFFCE6F4),
+            pageBgMid = Color(0xFFFEF5FA),
+            pageBgBottom = Color(0xFFFBEAF5),
+            surfaceCard = Color(0xFFFFFFFF),
+            surfaceElevated = Color(0xFFFBE4F2),
+            border = Color(0xFFEDBEE0),
+            inkPrimary = Color(0xFF240D1B),
+            inkSecondary = Color(0xFF6E435D),
+            heroStart = Color(0xFF380F30),
+            heroEnd = Color(0xFF1B0718),
+            surfaceTint = Color(0xFFFCE2F1)
+        )
+    }
 
-    val HighPriorityBg = Color(0xFFFFDAD6)
-    val HighPriorityText = Color(0xFFBA1A1A)
-    val DangerText = Color(0xFF93000A)
-    val EmeraldDot = Color(0xFF10B981)
+    ElementalTheme.CHERRY_BLOSSOM -> if (oledMode) {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = true,
+            primary = Color(0xFFFF8FB8),
+            primaryBright = Color(0xFFFFD0E2),
+            secondary = Color(0xFFFFB296),
+            glowCore = Color(0xFFFF9EC3),
+            glowOuter = Color(0xFFB53B6A),
+            onPrimary = Color(0xFF260915),
+            pageBgTop = Color(0xFF1B0B13),
+            pageBgMid = Color(0xFF12070D),
+            pageBgBottom = Color(0xFF0A0408),
+            surfaceCard = Color(0xFF231019),
+            surfaceElevated = Color(0xFF311724),
+            border = Color(0xFF63304A),
+            inkPrimary = Color(0xFFFFF4F8),
+            inkSecondary = Color(0xFFD9AEC0),
+            heroStart = Color(0xFF47182E),
+            heroEnd = Color(0xFF1D0A14),
+            surfaceTint = Color(0xFF361626)
+        )
+    } else {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = false,
+            primary = Color(0xFFD64572),
+            primaryBright = Color(0xFFFF94B8),
+            secondary = Color(0xFFE58A65),
+            glowCore = Color(0xFFFF9EC0),
+            glowOuter = Color(0xFFFFD6E5),
+            onPrimary = Color.White,
+            pageBgTop = Color(0xFFFFEBF2),
+            pageBgMid = Color(0xFFFFF7FA),
+            pageBgBottom = Color(0xFFFCEEF3),
+            surfaceCard = Color(0xFFFFFFFF),
+            surfaceElevated = Color(0xFFFCE4ED),
+            border = Color(0xFFF1C4D5),
+            inkPrimary = Color(0xFF2B141E),
+            inkSecondary = Color(0xFF73485B),
+            heroStart = Color(0xFF44172B),
+            heroEnd = Color(0xFF210A15),
+            surfaceTint = Color(0xFFFDE3EC)
+        )
+    }
+
+    ElementalTheme.SNOW -> if (oledMode) {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = true,
+            primary = Color(0xFF8FD7FF),
+            primaryBright = Color(0xFFDCF3FF),
+            secondary = Color(0xFFA6B8FF),
+            glowCore = Color(0xFFA2E0FF),
+            glowOuter = Color(0xFF2C6FA8),
+            onPrimary = Color(0xFF061626),
+            pageBgTop = Color(0xFF081421),
+            pageBgMid = Color(0xFF050E18),
+            pageBgBottom = Color(0xFF03080F),
+            surfaceCard = Color(0xFF0E1D2D),
+            surfaceElevated = Color(0xFF162A40),
+            border = Color(0xFF2D5175),
+            inkPrimary = Color(0xFFF2FAFF),
+            inkSecondary = Color(0xFFA8C6DF),
+            heroStart = Color(0xFF122C47),
+            heroEnd = Color(0xFF081524),
+            surfaceTint = Color(0xFF142B42)
+        )
+    } else {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = false,
+            primary = Color(0xFF2A78B8),
+            primaryBright = Color(0xFF7AC7FA),
+            secondary = Color(0xFF6A7FC4),
+            glowCore = Color(0xFF8CD3FF),
+            glowOuter = Color(0xFFD1ECFF),
+            onPrimary = Color.White,
+            pageBgTop = Color(0xFFE6F4FD),
+            pageBgMid = Color(0xFFF4FAFF),
+            pageBgBottom = Color(0xFFE9F4FC),
+            surfaceCard = Color(0xFFFFFFFF),
+            surfaceElevated = Color(0xFFE0F0FA),
+            border = Color(0xFFBAD8EE),
+            inkPrimary = Color(0xFF0E1F2E),
+            inkSecondary = Color(0xFF46647D),
+            heroStart = Color(0xFF122B44),
+            heroEnd = Color(0xFF091726),
+            surfaceTint = Color(0xFFDFF0FC)
+        )
+    }
+
+    ElementalTheme.RAIN -> if (oledMode) {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = true,
+            primary = Color(0xFF4FD1E8),
+            primaryBright = Color(0xFFB0EEFA),
+            secondary = Color(0xFF7E9BF2),
+            glowCore = Color(0xFF5ADAF0),
+            glowOuter = Color(0xFF176985),
+            onPrimary = Color(0xFF04171F),
+            pageBgTop = Color(0xFF06131A),
+            pageBgMid = Color(0xFF040D13),
+            pageBgBottom = Color(0xFF02080C),
+            surfaceCard = Color(0xFF0B1C25),
+            surfaceElevated = Color(0xFF122936),
+            border = Color(0xFF244F63),
+            inkPrimary = Color(0xFFEDF9FC),
+            inkSecondary = Color(0xFF9BC2D1),
+            heroStart = Color(0xFF0E2E3D),
+            heroEnd = Color(0xFF06161F),
+            surfaceTint = Color(0xFF102A36)
+        )
+    } else {
+        ElementalThemePalette(
+            theme = theme,
+            isDark = false,
+            primary = Color(0xFF1F6B82),
+            primaryBright = Color(0xFF52B6D1),
+            secondary = Color(0xFF49629E),
+            glowCore = Color(0xFF5BC2DC),
+            glowOuter = Color(0xFFB5E3F0),
+            onPrimary = Color.White,
+            pageBgTop = Color(0xFFDFEEF4),
+            pageBgMid = Color(0xFFF0F7FA),
+            pageBgBottom = Color(0xFFE3EFF4),
+            surfaceCard = Color(0xFFFFFFFF),
+            surfaceElevated = Color(0xFFDCEBF0),
+            border = Color(0xFFB1D1DE),
+            inkPrimary = Color(0xFF0F2029),
+            inkSecondary = Color(0xFF426270),
+            heroStart = Color(0xFF102D3A),
+            heroEnd = Color(0xFF071720),
+            surfaceTint = Color(0xFFD9ECF2)
+        )
+    }
 }
 
-data class CategoryThemeStyle(
-    val preview: Color,
-    val cardBgLight: Color,
-    val badgeBg: Color,
-    val badgeText: Color,
-    val accentText: Color
-)
-
-fun CategoryColor.toThemeStyle(): CategoryThemeStyle = when (this) {
-    CategoryColor.PINK -> CategoryThemeStyle(
-        preview = BrandColors.CandyPink,
-        cardBgLight = BrandColors.CandyPink,
-        badgeBg = Color.White.copy(alpha = 0.92f),
-        badgeText = BrandColors.OnSurfaceDark,
-        accentText = BrandColors.CandyPinkDeep
-    )
-    CategoryColor.YELLOW -> CategoryThemeStyle(
-        preview = BrandColors.ButterYellow,
-        cardBgLight = BrandColors.ButterYellow,
-        badgeBg = Color.White.copy(alpha = 0.92f),
-        badgeText = BrandColors.OnSurfaceDark,
-        accentText = BrandColors.ButterYellowText
-    )
-    CategoryColor.LAVENDER -> CategoryThemeStyle(
-        preview = BrandColors.LavenderSoft,
-        cardBgLight = BrandColors.LavenderSoft,
-        badgeBg = Color.White.copy(alpha = 0.92f),
-        badgeText = BrandColors.LavenderText,
-        accentText = BrandColors.LavenderMuted
-    )
-    CategoryColor.MATCHA -> CategoryThemeStyle(
-        preview = BrandColors.Matcha,
-        cardBgLight = BrandColors.SurfaceContainerHigh,
-        badgeBg = Color.White,
-        badgeText = BrandColors.OnSurfaceDark,
-        accentText = BrandColors.MatchaDark
-    )
-    CategoryColor.LILAC -> CategoryThemeStyle(
-        preview = BrandColors.Lilac,
-        cardBgLight = BrandColors.Lilac,
-        badgeBg = Color.White.copy(alpha = 0.92f),
-        badgeText = BrandColors.OnSurfaceDark,
-        accentText = BrandColors.LilacText
-    )
-    CategoryColor.CYAN -> CategoryThemeStyle(
-        preview = BrandColors.CyanSoft,
-        cardBgLight = BrandColors.CyanSoft,
-        badgeBg = Color.White.copy(alpha = 0.92f),
-        badgeText = BrandColors.CyanText,
-        accentText = BrandColors.CyanText
-    )
-    CategoryColor.SLATE -> CategoryThemeStyle(
-        preview = BrandColors.SurfaceContainerHigh,
-        cardBgLight = BrandColors.SurfaceContainerLow,
-        badgeBg = Color.White,
-        badgeText = BrandColors.OnSurfaceDark,
-        accentText = BrandColors.OnSurfaceVariant
-    )
+val LocalElementalPalette = staticCompositionLocalOf {
+    elementalPaletteFor(ElementalTheme.BLOOM, oledMode = false)
 }
 
-val SpaceGroteskFontFamily = FontFamily(
-    Font(R.font.space_grotesk, FontWeight.Normal),
-    Font(R.font.space_grotesk, FontWeight.Medium),
-    Font(R.font.space_grotesk, FontWeight.SemiBold),
-    Font(R.font.space_grotesk, FontWeight.Bold)
+object OneReflectionColors {
+    // Day Theme — Sunlit Sky, Cloud Ivory, Spotted Mushroom Red & Meadow Grass
+    val SurfaceWarm = Color(0xFFEEF6FC)
+    val SurfaceCard = Color(0xFFFFFFFF)
+    val SurfaceCardLow = Color(0xFFE2F0FA)
+    val SurfaceCardHigh = Color(0xFFD2E7F7)
+    val HairlineLight = Color(0xFFC9DFEF)
+
+    // Ink Hierarchy (Crisp Slate-Navy on Sunlit Sky)
+    val InkPrimary = Color(0xFF17222D)
+    val InkSecondary = Color(0xFF495E70)
+    val InkMuted = Color(0xFF72899C)
+    val OutlineSoft = Color(0xFFBCD4E6)
+
+    // Night Theme — Starlit Midnight Navy & Bioluminescent Cyan Glow
+    val OledBlack = Color(0xFF070B18)
+    val OledSurface = Color(0xFF111930)
+    val OledSurfaceElevated = Color(0xFF1A2645)
+    val OledBorder = Color(0xFF2B3E68)
+
+    // Day/Night Enchanted Sanctuary Accents
+    val Terracotta = Color(0xFFDF4435)
+    val TerracottaLight = Color(0xFF4CF5E2)
+    val TerracottaDeep = Color(0xFFA6261A)
+    val PeachMist = Color(0xFFFDEBE8)
+    val PeachInk = Color(0xFF5C1B15)
+
+    val BurnishedGold = Color(0xFFD9931E)
+    val GoldLuminous = Color(0xFFF8D66D)
+    val HoneyMist = Color(0xFFFFF6DC)
+    val HoneyInk = Color(0xFF734D08)
+
+    val SageDeep = Color(0xFF398737)
+    val SageLight = Color(0xFF6EEB9B)
+    val SageMist = Color(0xFFE4F4E2)
+
+    val IndigoDeep = Color(0xFF2D6CA3)
+    val IndigoLight = Color(0xFF8FB8FF)
+    val IndigoMist = Color(0xFFDFF0FD)
+
+    val PlumAccent = Color(0xFF7A4E85)
+    val LilacMist = Color(0xFFF1E7F5)
+
+    // Semantic Legacy Token Aliases
+    val PlumPrimary = Terracotta
+    val CandyPink = PeachMist
+    val CandyPinkDeep = TerracottaDeep
+    val BlushPink = PeachMist
+    val BlushPinkInk = PeachInk
+    val RosePink = TerracottaLight
+
+    val ButterYellow = HoneyMist
+    val ButterYellowBright = GoldLuminous
+    val ButterInk = HoneyInk
+
+    val LavenderBlue = IndigoMist
+    val LavenderBorder = Color(0xFFBDD8EE)
+    val LavenderInk = IndigoDeep
+    val LavenderMuted = Color(0xFF4C6B8A)
+    val SlateBlue = IndigoDeep
+
+    val Matcha = SageMist
+    val MatchaInk = SageDeep
+    val WarmLilac = LilacMist
+    val SoftCyan = Color(0xFFDCF6F4)
+    val SoftCyanInk = Color(0xFF12635E)
+
+    val HighPrioBg = Color(0xFFFCE4E1)
+    val HighPrioInk = Color(0xFFB3281E)
+    val DangerInk = Color(0xFF8C1D18)
+}
+
+fun formatLiters(value: Double): String {
+    val rounded = kotlin.math.round(value * 100.0) / 100.0
+    return if (rounded % 0.1 == 0.0 || kotlin.math.abs((rounded * 10) - kotlin.math.round(rounded * 10)) < 0.001) {
+        String.format(Locale.US, "%.1f", rounded)
+    } else {
+        String.format(Locale.US, "%.2f", rounded)
+    }
+}
+
+fun categoryPreviewColor(color: CategoryColor): Color = when (color) {
+    CategoryColor.PINK -> OneReflectionColors.Terracotta
+    CategoryColor.YELLOW -> OneReflectionColors.BurnishedGold
+    CategoryColor.LAVENDER -> OneReflectionColors.IndigoDeep
+    CategoryColor.MATCHA -> OneReflectionColors.SageDeep
+    CategoryColor.LILAC -> OneReflectionColors.PlumAccent
+    CategoryColor.CYAN -> OneReflectionColors.SoftCyanInk
+    CategoryColor.SLATE -> OneReflectionColors.InkSecondary
+}
+
+fun categoryCardBackground(color: CategoryColor, oledMode: Boolean): Color {
+    if (oledMode) return OneReflectionColors.OledSurface
+    return when (color) {
+        CategoryColor.PINK -> OneReflectionColors.PeachMist
+        CategoryColor.YELLOW -> OneReflectionColors.HoneyMist
+        CategoryColor.LAVENDER -> OneReflectionColors.IndigoMist
+        CategoryColor.MATCHA -> OneReflectionColors.SageMist
+        CategoryColor.LILAC -> OneReflectionColors.LilacMist
+        CategoryColor.CYAN -> OneReflectionColors.SoftCyan
+        CategoryColor.SLATE -> OneReflectionColors.SurfaceCard
+    }
+}
+
+fun priorityBadgeColors(priority: TaskPriority): Pair<Color, Color> = when (priority) {
+    TaskPriority.HIGH -> OneReflectionColors.HighPrioBg to OneReflectionColors.HighPrioInk
+    TaskPriority.MEDIUM -> OneReflectionColors.HoneyMist to OneReflectionColors.HoneyInk
+    TaskPriority.LOW -> OneReflectionColors.SageMist to OneReflectionColors.SageDeep
+}
+
+val DisplayFontFamily: FontFamily = FontFamily(
+    Font(R.font.fraunces, FontWeight.Normal),
+    Font(R.font.fraunces, FontWeight.Medium),
+    Font(R.font.fraunces, FontWeight.SemiBold),
+    Font(R.font.fraunces, FontWeight.Bold)
 )
 
-val PlusJakartaSansFontFamily = FontFamily(
-    Font(R.font.plus_jakarta_sans, FontWeight.Normal),
-    Font(R.font.plus_jakarta_sans, FontWeight.Medium),
-    Font(R.font.plus_jakarta_sans, FontWeight.SemiBold),
-    Font(R.font.plus_jakarta_sans, FontWeight.Bold)
+val BodyFontFamily: FontFamily = FontFamily(
+    Font(R.font.dm_sans, FontWeight.Normal),
+    Font(R.font.dm_sans, FontWeight.Medium),
+    Font(R.font.dm_sans, FontWeight.SemiBold),
+    Font(R.font.dm_sans, FontWeight.Bold)
 )
 
-val OneReflectionTypography = Typography(
+val MonoFontFamily: FontFamily = FontFamily(
+    Font(R.font.jetbrains_mono, FontWeight.Normal),
+    Font(R.font.jetbrains_mono, FontWeight.Medium),
+    Font(R.font.jetbrains_mono, FontWeight.Bold)
+)
+
+val SpaceGroteskFontFamily: FontFamily = DisplayFontFamily
+val PlusJakartaFontFamily: FontFamily = BodyFontFamily
+
+private val OneReflectionTypography = Typography(
     displayLarge = TextStyle(
-        fontFamily = SpaceGroteskFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
-        lineHeight = 40.sp,
-        letterSpacing = (-0.8).sp
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 44.sp,
+        lineHeight = 48.sp,
+        letterSpacing = (-1.2).sp
     ),
     headlineLarge = TextStyle(
-        fontFamily = SpaceGroteskFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 28.sp,
-        lineHeight = 34.sp,
-        letterSpacing = (-0.5).sp
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 30.sp,
+        lineHeight = 35.sp,
+        letterSpacing = (-0.6).sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = SpaceGroteskFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 24.sp,
-        lineHeight = 30.sp,
-        letterSpacing = (-0.4).sp
-    ),
-    headlineSmall = TextStyle(
-        fontFamily = SpaceGroteskFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
-        lineHeight = 26.sp,
-        letterSpacing = (-0.2).sp
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 23.sp,
+        lineHeight = 28.sp,
+        letterSpacing = (-0.3).sp
     ),
     titleLarge = TextStyle(
-        fontFamily = SpaceGroteskFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 18.sp,
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 19.sp,
         lineHeight = 24.sp
     ),
     titleMedium = TextStyle(
-        fontFamily = SpaceGroteskFontFamily,
+        fontFamily = BodyFontFamily,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
-        lineHeight = 22.sp
-    ),
-    titleSmall = TextStyle(
-        fontFamily = SpaceGroteskFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
-        lineHeight = 18.sp
+        fontSize = 15.sp,
+        lineHeight = 21.sp
     ),
     bodyLarge = TextStyle(
-        fontFamily = PlusJakartaSansFontFamily,
+        fontFamily = BodyFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 15.sp,
-        lineHeight = 22.sp
+        fontSize = 14.sp,
+        lineHeight = 21.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = PlusJakartaSansFontFamily,
+        fontFamily = BodyFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 13.sp,
+        fontSize = 12.sp,
         lineHeight = 18.sp
     ),
-    bodySmall = TextStyle(
-        fontFamily = PlusJakartaSansFontFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 15.sp
-    ),
     labelLarge = TextStyle(
-        fontFamily = PlusJakartaSansFontFamily,
+        fontFamily = BodyFontFamily,
         fontWeight = FontWeight.Bold,
-        fontSize = 13.sp,
-        lineHeight = 16.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = PlusJakartaSansFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 11.sp,
-        lineHeight = 14.sp
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.4.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = PlusJakartaSansFontFamily,
-        fontWeight = FontWeight.Bold,
+        fontFamily = MonoFontFamily,
+        fontWeight = FontWeight.Medium,
         fontSize = 10.sp,
-        lineHeight = 12.sp
+        lineHeight = 14.sp,
+        letterSpacing = 0.8.sp
     )
 )
 
-private val LightColors = lightColorScheme(
-    primary = BrandColors.PrimaryPlum,
-    onPrimary = Color.White,
-    primaryContainer = BrandColors.CandyPink,
-    onPrimaryContainer = BrandColors.CandyPinkDeep,
-    secondary = BrandColors.SecondaryGold,
-    onSecondary = Color.White,
-    secondaryContainer = BrandColors.ButterYellow,
-    onSecondaryContainer = BrandColors.ButterYellowText,
-    tertiary = BrandColors.TertiarySlateBlue,
-    onTertiary = Color.White,
-    tertiaryContainer = BrandColors.LavenderContainer,
-    onTertiaryContainer = BrandColors.LavenderText,
-    background = BrandColors.SurfaceWarm,
-    onBackground = BrandColors.OnSurfaceDark,
-    surface = BrandColors.SurfaceWarm,
-    onSurface = BrandColors.OnSurfaceDark,
-    surfaceVariant = BrandColors.SurfaceContainerLow,
-    onSurfaceVariant = BrandColors.OnSurfaceVariant,
-    outlineVariant = BrandColors.OutlineVariant
-)
+@Composable
+private fun animateThemeColor(target: Color): Color {
+    val color by animateColorAsState(
+        targetValue = target,
+        animationSpec = tween(durationMillis = 660, easing = SanctuaryEase),
+        label = "elemental_color_anim"
+    )
+    return color
+}
 
-private val OledDarkColors = darkColorScheme(
-    primary = BrandColors.CandyPink,
-    onPrimary = BrandColors.OnSurfaceDark,
-    primaryContainer = BrandColors.PrimaryPlum,
-    onPrimaryContainer = Color.White,
-    secondary = BrandColors.ButterYellow,
-    onSecondary = BrandColors.OnSurfaceDark,
-    secondaryContainer = BrandColors.ButterYellowText,
-    onSecondaryContainer = Color.White,
-    tertiary = BrandColors.LavenderContainer,
-    onTertiary = BrandColors.LavenderText,
-    background = BrandColors.OledBlack,
-    onBackground = Color.White,
-    surface = BrandColors.OledBlack,
-    onSurface = Color.White,
-    surfaceVariant = BrandColors.OledCard,
-    onSurfaceVariant = Color(0xFFA1A1AA),
-    outlineVariant = BrandColors.OledBorder
-)
+@Composable
+private fun animatedPalette(target: ElementalThemePalette): ElementalThemePalette {
+    val darkProgress by animateFloatAsState(
+        targetValue = if (target.isDark) 1f else 0f,
+        animationSpec = tween(durationMillis = 660, easing = SanctuaryEase),
+        label = "theme_dark_progress"
+    )
+    return target.copy(
+        darkProgress = darkProgress,
+        primary = animateThemeColor(target.primary),
+        primaryBright = animateThemeColor(target.primaryBright),
+        secondary = animateThemeColor(target.secondary),
+        glowCore = animateThemeColor(target.glowCore),
+        glowOuter = animateThemeColor(target.glowOuter),
+        onPrimary = animateThemeColor(target.onPrimary),
+        pageBgTop = animateThemeColor(target.pageBgTop),
+        pageBgMid = animateThemeColor(target.pageBgMid),
+        pageBgBottom = animateThemeColor(target.pageBgBottom),
+        surfaceCard = animateThemeColor(target.surfaceCard),
+        surfaceElevated = animateThemeColor(target.surfaceElevated),
+        border = animateThemeColor(target.border),
+        inkPrimary = animateThemeColor(target.inkPrimary),
+        inkSecondary = animateThemeColor(target.inkSecondary),
+        heroStart = animateThemeColor(target.heroStart),
+        heroEnd = animateThemeColor(target.heroEnd),
+        surfaceTint = animateThemeColor(target.surfaceTint)
+    )
+}
 
 @Composable
 fun OneReflectionTheme(
     oledMode: Boolean,
+    elementalTheme: ElementalTheme = ElementalTheme.BLOOM,
     content: @Composable () -> Unit
 ) {
-    MaterialTheme(
-        colorScheme = if (oledMode) OledDarkColors else LightColors,
-        typography = OneReflectionTypography,
-        content = content
-    )
+    val palette = animatedPalette(elementalPaletteFor(elementalTheme, oledMode))
+
+    val onPrimaryContainer = animateThemeColor(if (oledMode) palette.primaryBright else palette.inkPrimary)
+    val onSecondary = animateThemeColor(if (oledMode) palette.onPrimary else Color.White)
+    val onSecondaryContainer = animateThemeColor(if (oledMode) palette.secondary else palette.inkPrimary)
+    val tertiary = animateThemeColor(if (oledMode) OneReflectionColors.SageLight else OneReflectionColors.SageDeep)
+    val tertiaryContainer = animateThemeColor(if (oledMode) Color(0xFF112C22) else OneReflectionColors.SageMist)
+    val onTertiaryContainer = animateThemeColor(if (oledMode) Color(0xFFCFFCE0) else OneReflectionColors.SageDeep)
+
+    val scheme: ColorScheme = if (oledMode) {
+        darkColorScheme(
+            primary = palette.primary,
+            onPrimary = palette.onPrimary,
+            primaryContainer = palette.surfaceTint,
+            onPrimaryContainer = onPrimaryContainer,
+            secondary = palette.secondary,
+            onSecondary = onSecondary,
+            secondaryContainer = palette.surfaceElevated,
+            onSecondaryContainer = onSecondaryContainer,
+            tertiary = tertiary,
+            tertiaryContainer = tertiaryContainer,
+            onTertiaryContainer = onTertiaryContainer,
+            background = palette.pageBgMid,
+            onBackground = palette.inkPrimary,
+            surface = palette.surfaceCard,
+            onSurface = palette.inkPrimary,
+            surfaceVariant = palette.surfaceElevated,
+            onSurfaceVariant = palette.inkSecondary,
+            outline = palette.border
+        )
+    } else {
+        lightColorScheme(
+            primary = palette.primary,
+            onPrimary = palette.onPrimary,
+            primaryContainer = palette.surfaceTint,
+            onPrimaryContainer = onPrimaryContainer,
+            secondary = palette.secondary,
+            onSecondary = onSecondary,
+            secondaryContainer = palette.surfaceElevated,
+            onSecondaryContainer = onSecondaryContainer,
+            tertiary = tertiary,
+            tertiaryContainer = tertiaryContainer,
+            onTertiaryContainer = onTertiaryContainer,
+            background = palette.pageBgMid,
+            onBackground = palette.inkPrimary,
+            surface = palette.surfaceCard,
+            onSurface = palette.inkPrimary,
+            surfaceVariant = palette.surfaceElevated,
+            onSurfaceVariant = palette.inkSecondary,
+            outline = palette.border
+        )
+    }
+
+    CompositionLocalProvider(LocalElementalPalette provides palette) {
+        MaterialTheme(
+            colorScheme = scheme,
+            typography = OneReflectionTypography,
+            content = content
+        )
+    }
 }

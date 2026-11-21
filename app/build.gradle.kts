@@ -25,9 +25,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            signingConfig = signingConfigs.getByName("debugConfig")
-        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -36,16 +33,18 @@ android {
             )
             signingConfig = signingConfigs.getByName("debugConfig")
         }
+        debug {
+            signingConfig = signingConfigs.getByName("debugConfig")
+        }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 }
 

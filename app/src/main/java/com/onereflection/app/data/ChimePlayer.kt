@@ -4,92 +4,63 @@ import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
 import com.onereflection.app.model.ChimeType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlin.concurrent.thread
 import kotlin.math.PI
 import kotlin.math.exp
 import kotlin.math.sin
 
-object ChimePlayer {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private var activeJob: Job? = null
+class ChimePlayer {
+    @Volatile
+    private var activeTrack: AudioTrack? = null
 
     fun play(type: ChimeType) {
-        activeJob?.cancel()
-        activeJob = scope.launch {
-            runCatching {
+        stop()
+        thread(start = true, isDaemon = true) {
+            try {
                 val sampleRate = 22050
                 val durationSec = when (type) {
-                    ChimeType.CLICK -> 0.055
-                    ChimeType.WATER -> 0.16
-                    ChimeType.NORDIC -> 1.1
-                    ChimeType.SOLFEGGIO -> 1.4
-                    ChimeType.PIANO -> 1.2
-                    ChimeType.RIVER -> 1.5
-                    ChimeType.TIBETAN -> 1.6
+                    ChimeType.CLICK -> 0.08
+                    ChimeType.WATER -> 0.35
+                    else -> 1.15
                 }
                 val numSamples = (sampleRate * durationSec).toInt()
-                val pcm = ShortArray(numSamples)
+                val buffer = ShortArray(numSamples)
 
                 for (i in 0 until numSamples) {
                     val t = i.toDouble() / sampleRate
-                    val progress = i.toDouble() / numSamples
                     val sample = when (type) {
-                        ChimeType.CLICK -> {
-                            val freq = 800.0 * exp(-t * 14.0)
-                            val env = exp(-t * 45.0)
-                            0.25 * env * sin(2.0 * PI * freq * t)
-                        }
-                        ChimeType.WATER -> {
-                            val freq = 450.0 + 500.0 * progress
-                            val env = sin(PI * progress) * exp(-t * 6.0)
-                            0.32 * env * sin(2.0 * PI * freq * t)
-                        }
                         ChimeType.TIBETAN -> {
-                            val env = (1.0 - exp(-t * 10.0)) * exp(-t * 1.9)
-                            val s = sin(2.0 * PI * 180.0 * t) * 0.50 +
-                                sin(2.0 * PI * 362.0 * t) * 0.25 +
-                                sin(2.0 * PI * 544.0 * t) * 0.15 +
-                                sin(2.0 * PI * 728.0 * t) * 0.10
-                            0.30 * env * s
+                            val env = exp(-2.4 * t) * (1.0 - exp(-22.0 * t))
+                            env * (0.6 * sin(2.0 * PI * 432.0 * t) + 0.3 * sin(2.0 * PI * 864.0 * t) + 0.1 * sin(2.0 * PI * 648.0 * t))
                         }
                         ChimeType.NORDIC -> {
-                            val env = exp(-t * 3.2)
-                            val s = sin(2.0 * PI * 880.0 * t) * 0.55 +
-                                sin(2.0 * PI * 1320.0 * t) * 0.30 +
-                                sin(2.0 * PI * 1760.0 * t) * 0.15
-                            0.22 * env * s
+                            val env = exp(-3.0 * t) * (1.0 - exp(-30.0 * t))
+                            env * (0.55 * sin(2.0 * PI * 528.0 * t) + 0.35 * sin(2.0 * PI * 792.0 * t))
                         }
                         ChimeType.SOLFEGGIO -> {
-                            val env = (1.0 - exp(-t * 12.0)) * exp(-t * 2.1)
-                            0.26 * env * sin(2.0 * PI * 528.0 * t)
+                            val env = exp(-2.8 * t) * (1.0 - exp(-28.0 * t))
+                            env * (0.65 * sin(2.0 * PI * 528.0 * t) + 0.25 * sin(2.0 * PI * 1056.0 * t))
+                        }
+                        ChimeType.WATER -> {
+                            val freq = 620.0 + 980.0 * (t / durationSec)
+                            val env = exp(-9.0 * t) * (1.0 - exp(-60.0 * t))
+                            env * sin(2.0 * PI * freq * t)
+                        }
+                        ChimeType.CLICK -> {
+                            val env = exp(-48.0 * t)
+                            env * sin(2.0 * PI * 880.0 * t)
                         }
                         ChimeType.PIANO -> {
-                            val env = exp(-t * 3.0)
-                            val s = sin(2.0 * PI * 261.6 * t) +
-                                sin(2.0 * PI * 329.6 * t) * 0.8 +
-                                sin(2.0 * PI * 392.0 * t) * 0.7
-                            0.18 * env * s
+                            val env = exp(-3.2 * t) * (1.0 - exp(-45.0 * t))
+                            env * (0.55 * sin(2.0 * PI * 440.0 * t) + 0.3 * sin(2.0 * PI * 554.37 * t) + 0.15 * sin(2.0 * PI * 659.25 * t))
                         }
                         ChimeType.RIVER -> {
-                            val env = sin(PI * progress)
-                            val s = sin(2.0 * PI * 320.0 * t) * 0.5 +
-                                sin(2.0 * PI * 480.0 * t) * 0.3 +
-                                sin(2.0 * PI * 640.0 * t) * 0.2
-                            0.18 * env * s
+                            val env = exp(-2.0 * t) * (1.0 - exp(-15.0 * t))
+                            env * (0.5 * sin(2.0 * PI * 396.0 * t) + 0.35 * sin(2.0 * PI * 594.0 * t))
                         }
                     }
-                    pcm[i] = (sample.coerceIn(-1.0, 1.0) * Short.MAX_VALUE).toInt().toShort()
+                    buffer[i] = (sample * 0.42 * Short.MAX_VALUE).toInt().coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt()).toShort()
                 }
-
-                val minBuf = AudioTrack.getMinBufferSize(
-                    sampleRate,
-                    AudioFormat.CHANNEL_OUT_MONO,
-                    AudioFormat.ENCODING_PCM_16BIT
-                ).coerceAtLeast(pcm.size * 2)
 
                 val track = AudioTrack.Builder()
                     .setAudioAttributes(
@@ -105,21 +76,27 @@ object ChimePlayer {
                             .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                             .build()
                     )
-                    .setBufferSizeInBytes(minBuf)
+                    .setBufferSizeInBytes(buffer.size * 2)
                     .setTransferMode(AudioTrack.MODE_STATIC)
                     .build()
 
-                track.write(pcm, 0, pcm.size)
+                activeTrack = track
+                track.write(buffer, 0, buffer.size)
                 track.play()
-                kotlinx.coroutines.delay((durationSec * 1000).toLong() + 80L)
-                track.stop()
-                track.release()
+            } catch (_: Throwable) {
+                // Ignore audio hardware limitations in headless environments
             }
         }
     }
 
     fun stop() {
-        activeJob?.cancel()
-        activeJob = null
+        val current = activeTrack
+        activeTrack = null
+        try {
+            current?.stop()
+            current?.release()
+        } catch (_: Throwable) {
+            // Safe cleanup
+        }
     }
 }

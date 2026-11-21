@@ -3,15 +3,37 @@ package com.onereflection.app.ui.modals
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,52 +42,48 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.onereflection.app.data.ChimePlayer
-import com.onereflection.app.model.AVATAR_LEO
-import com.onereflection.app.model.AVATAR_MAYA
 import com.onereflection.app.model.ChimeType
-import com.onereflection.app.model.QuietHoursConfig
-import com.onereflection.app.ui.components.AvatarImage
+import com.onereflection.app.model.OneReflectionUiState
+import com.onereflection.app.ui.components.OneReflectionLogoMark
 import com.onereflection.app.ui.components.OneReflectionSwitch
-import com.onereflection.app.ui.theme.BrandColors
+import com.onereflection.app.ui.theme.BodyFontFamily
+import com.onereflection.app.ui.theme.DisplayFontFamily
+import com.onereflection.app.ui.theme.MonoFontFamily
+import com.onereflection.app.ui.theme.OneReflectionColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BedtimeSyncSheet(
-    initialConfig: QuietHoursConfig,
-    oledMode: Boolean,
+    uiState: OneReflectionUiState,
     onDismiss: () -> Unit,
-    onSave: (QuietHoursConfig) -> Unit
+    onAdjustBedtime: (Int) -> Unit,
+    onAdjustWake: (Int) -> Unit,
+    onToggleSyncSleepWithPartner: () -> Unit,
+    onPlayChime: (ChimeType) -> Unit
 ) {
-    var bedtimeMinutes by remember { mutableIntStateOf(initialConfig.bedtimeMinutes) }
-    var wakeMinutes by remember { mutableIntStateOf(initialConfig.wakeMinutes) }
-    var syncWithPartner by remember { mutableStateOf(initialConfig.syncWithPartner) }
-    var mayaEmergency by remember { mutableStateOf(true) }
-    var mayaWhispers by remember { mutableStateOf(true) }
-    var mayaWakeQueue by remember { mutableStateOf(true) }
-    var sensitivity by remember { mutableStateOf("gentle") }
-    var leoEmergency by remember { mutableStateOf(true) }
-    var selectedVibe by remember { mutableStateOf(initialConfig.audioVibe) }
-    var mutedHaptics by remember { mutableStateOf(initialConfig.mutedHaptics) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var selectedChime by remember { mutableStateOf(ChimeType.TIBETAN) }
 
-    val sheetBg = if (oledMode) Color(0xFF0A0A0C) else Color.White
-    val textPrimary = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-    val textSecondary = if (oledMode) Color(0xFFA1A1AA) else BrandColors.OnSurfaceVariant
-    val cardBg = if (oledMode) BrandColors.OledCard else Color.White
-    val cardBorder = if (oledMode) BrandColors.OledBorder else Color.Black.copy(alpha = 0.06f)
+    val oledMode = uiState.oledMode
+    val containerBg = if (oledMode) OneReflectionColors.OledSurface else OneReflectionColors.SurfaceWarm
+    val cardBg = if (oledMode) OneReflectionColors.OledSurfaceElevated else OneReflectionColors.SurfaceCard
+    val borderColor = if (oledMode) OneReflectionColors.OledBorder else OneReflectionColors.HairlineLight
+
+    val bedtimeStr = String.format("%02d:%02d", uiState.bedtimeMinutes / 60, uiState.bedtimeMinutes % 60)
+    val wakeStr = String.format("%02d:%02d", uiState.wakeMinutes / 60, uiState.wakeMinutes % 60)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = sheetBg,
+        sheetState = sheetState,
+        containerColor = containerBg,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
                 .navigationBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 6.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+                .padding(horizontal = 20.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Header
             Row(
@@ -74,285 +92,253 @@ fun BedtimeSyncSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(BrandColors.LavenderSoft)
-                        .padding(horizontal = 10.dp, vertical = 5.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Icon(Icons.Default.Bedtime, contentDescription = null, tint = BrandColors.LavenderText, modifier = Modifier.size(14.dp))
-                    Text("BEDTIME HARMONY • MUTUAL REST", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.LavenderText)
-                }
-
-                IconButton(onClick = onDismiss, modifier = Modifier.size(34.dp)) {
-                    Icon(Icons.Default.Close, contentDescription = "Close modal", tint = textPrimary)
-                }
-            }
-
-            Column {
-                Text("Quiet Hours & Bedtime Sync.", style = MaterialTheme.typography.headlineSmall, color = textPrimary)
-                Text("Protect restorative sleep while keeping delicate audio bridges open.", style = MaterialTheme.typography.bodySmall, color = textSecondary)
-            }
-
-            // Global Rest Horizon
-            Surface(
-                shape = RoundedCornerShape(26.dp),
-                color = BrandColors.PinkFixed.copy(alpha = if (oledMode) 0.16f else 0.4f),
-                border = BorderStroke(1.dp, cardBorder)
-            ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Text("GLOBAL REST HORIZON", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = if (oledMode) BrandColors.CandyPink else BrandColors.CandyPinkDeep)
-                        Box(modifier = Modifier.clip(CircleShape).background(Color.White.copy(alpha = 0.9f)).padding(horizontal = 9.dp, vertical = 3.dp)) {
-                            Text("Auto-Adaptive", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.OnSurfaceDark)
-                        }
-                    }
-
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        TimeStepperTile(
-                            label = "Bedtime",
-                            formattedTime = QuietHoursConfig.formatMinutes(bedtimeMinutes),
-                            cardBg = cardBg,
-                            textPrimary = textPrimary,
-                            textSecondary = textSecondary,
-                            onDecrement = {
-                                ChimePlayer.play(ChimeType.CLICK)
-                                bedtimeMinutes -= 15
-                            },
-                            onIncrement = {
-                                ChimePlayer.play(ChimeType.CLICK)
-                                bedtimeMinutes += 15
-                            },
-                            modifier = Modifier.weight(1f)
+                    OneReflectionLogoMark(size = 34.dp, cornerRadius = 10.dp)
+                    Column {
+                        Text(
+                            text = "CIRCADIAN RHYTHM & RULES",
+                            fontFamily = MonoFontFamily,
+                            fontSize = 9.5.sp,
+                            letterSpacing = 1.sp,
+                            color = MaterialTheme.colorScheme.primary
                         )
-                        TimeStepperTile(
-                            label = "Wake Horizon",
-                            formattedTime = QuietHoursConfig.formatMinutes(wakeMinutes),
-                            cardBg = cardBg,
-                            textPrimary = textPrimary,
-                            textSecondary = textSecondary,
-                            onDecrement = {
-                                ChimePlayer.play(ChimeType.CLICK)
-                                wakeMinutes -= 15
-                            },
-                            onIncrement = {
-                                ChimePlayer.play(ChimeType.CLICK)
-                                wakeMinutes += 15
-                            },
-                            modifier = Modifier.weight(1f)
+                        Text(
+                            text = "Bedtime Sync",
+                            fontFamily = DisplayFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 23.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
+                }
 
-                    Surface(shape = RoundedCornerShape(18.dp), color = cardBg, border = BorderStroke(1.dp, cardBorder)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("Sync Sleep State with Maya", style = MaterialTheme.typography.labelMedium, color = textPrimary)
-                                Text("Calibrates quiet hours when either partner dozes off", fontSize = 10.sp, color = textSecondary)
-                            }
-                            OneReflectionSwitch(
-                                checked = syncWithPartner,
-                                onCheckedChange = { syncWithPartner = it },
-                                checkedTrackColor = BrandColors.PrimaryPlum
-                            )
-                        }
-                    }
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .testTag("bedtime_sync_close")
+                        .clip(CircleShape)
+                        .background(cardBg)
+                        .clickable { onDismiss() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Filled.Close, contentDescription = "Close Bedtime Sync", modifier = Modifier.size(18.dp))
                 }
             }
 
-            // Maya Breakthrough Rules
-            Surface(
-                shape = RoundedCornerShape(26.dp),
-                color = BrandColors.ButterYellow.copy(alpha = if (oledMode) 0.16f else 0.28f),
-                border = BorderStroke(1.dp, BrandColors.ButterYellowText.copy(alpha = 0.2f))
+            // Bedtime & Wake Time Steppers
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        AvatarImage(AVATAR_MAYA, "MR", "Maya R.", 40.dp, ringColor = BrandColors.ButterYellow)
-                        Column {
-                            Text("Maya R. • Primary Partner", style = MaterialTheme.typography.titleSmall, color = textPrimary)
-                            Text("Awake & Synced via Oura Loop", fontSize = 10.sp, color = textSecondary)
-                        }
-                    }
-
-                    BreakthroughToggle("Emergency Breakthrough", "Bypass silence with high-priority chime", mayaEmergency, cardBg, textPrimary, textSecondary) { mayaEmergency = it }
-                    BreakthroughToggle("Gentle Voice Whispers", "Soft audio capped at 20% max volume", mayaWhispers, cardBg, textPrimary, textSecondary) { mayaWhispers = it }
-                    BreakthroughToggle("Wake-Up Audio Queue", "Plant warm morning greetings for 07:00", mayaWakeQueue, cardBg, textPrimary, textSecondary) { mayaWakeQueue = it }
-
-                    // Sensitivity Threshold
-                    Row(
-                        modifier = Modifier.fillMaxWidth().clip(CircleShape).background(cardBg).padding(4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        listOf("critical" to "Critical Only", "gentle" to "Gentle Check-ins", "all" to "All Alarms").forEach { (id, label) ->
-                            val sel = sensitivity == id
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clip(CircleShape)
-                                    .background(if (sel) BrandColors.OnSurfaceDark else Color.Transparent)
-                                    .clickable {
-                                        ChimePlayer.play(ChimeType.CLICK)
-                                        sensitivity = id
-                                    }
-                                    .padding(vertical = 7.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = if (sel) Color.White else textSecondary)
-                            }
-                        }
-                    }
-                }
+                TimeStepperCard(
+                    title = "BEDTIME",
+                    timeText = bedtimeStr,
+                    icon = Icons.Filled.Bedtime,
+                    accent = OneReflectionColors.IndigoDeep,
+                    cardBg = cardBg,
+                    borderColor = borderColor,
+                    minusTag = "bedtime_minus",
+                    plusTag = "bedtime_plus",
+                    onMinus = { onAdjustBedtime(-15) },
+                    onPlus = { onAdjustBedtime(15) },
+                    modifier = Modifier.weight(1f)
+                )
+                TimeStepperCard(
+                    title = "WAKE UP",
+                    timeText = wakeStr,
+                    icon = Icons.Filled.WbSunny,
+                    accent = OneReflectionColors.BurnishedGold,
+                    cardBg = cardBg,
+                    borderColor = borderColor,
+                    minusTag = "wake_minus",
+                    plusTag = "wake_plus",
+                    onMinus = { onAdjustWake(-15) },
+                    onPlus = { onAdjustWake(15) },
+                    modifier = Modifier.weight(1f)
+                )
             }
 
-            // Leo Chen Breakthrough Rules
+            // Sync Sleep with Maya Toggle
             Surface(
-                shape = RoundedCornerShape(26.dp),
-                color = BrandColors.LavenderSoft.copy(alpha = if (oledMode) 0.16f else 0.35f),
-                border = BorderStroke(1.dp, BrandColors.TertiarySlateBlue.copy(alpha = 0.2f))
+                shape = RoundedCornerShape(22.dp),
+                color = cardBg,
+                border = BorderStroke(1.dp, borderColor)
             ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        AvatarImage(AVATAR_LEO, "LC", "Leo Chen", 40.dp, ringColor = BrandColors.LavenderContainer)
-                        Column {
-                            Text("Leo Chen • Studio Co-founder", style = MaterialTheme.typography.titleSmall, color = textPrimary)
-                            Text("Design Sprint & Releases", fontSize = 10.sp, color = textSecondary)
-                        }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Sync Quiet Horizon with Maya R.", fontFamily = BodyFontFamily, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text("Allow partner whispers during sleep", fontFamily = BodyFontFamily, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    BreakthroughToggle("Emergency Breakthrough", "Requires double-ping verification", leoEmergency, cardBg, textPrimary, textSecondary) { leoEmergency = it }
-                }
-            }
-
-            // Audio Vibe & Haptics
-            Surface(
-                shape = RoundedCornerShape(26.dp),
-                color = if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerLow,
-                border = BorderStroke(1.dp, cardBorder)
-            ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Audio Vibe & Haptic Texture", style = MaterialTheme.typography.titleSmall, color = textPrimary)
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        listOf(
-                            Triple("tibetan", "Tibetan Bowl", ChimeType.TIBETAN),
-                            Triple("piano", "Warm Piano", ChimeType.PIANO),
-                            Triple("river", "River Glow", ChimeType.RIVER)
-                        ).forEach { (id, label, chime) ->
-                            val sel = selectedVibe == id
-                            Surface(
-                                onClick = {
-                                    ChimePlayer.play(chime)
-                                    selectedVibe = id
-                                },
-                                shape = CircleShape,
-                                color = if (sel) BrandColors.OnSurfaceDark else cardBg,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Box(modifier = Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
-                                    Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = if (sel) Color.White else textPrimary)
-                                }
-                            }
-                        }
-                    }
-                    BreakthroughToggle("Muted Vibration Pulses", "Micro-taps only; avoids harsh buzzing", mutedHaptics, cardBg, textPrimary, textSecondary) { mutedHaptics = it }
-                }
-            }
-
-            Button(
-                onClick = {
-                    onSave(
-                        QuietHoursConfig(
-                            bedtimeMinutes = bedtimeMinutes,
-                            wakeMinutes = wakeMinutes,
-                            syncWithPartner = syncWithPartner,
-                            audioVibe = selectedVibe,
-                            mutedHaptics = mutedHaptics
-                        )
+                    OneReflectionSwitch(
+                        checked = uiState.syncSleepWithPartner,
+                        onCheckedChange = onToggleSyncSleepWithPartner,
+                        activeTrackColor = OneReflectionColors.Terracotta,
+                        testTag = "bedtime_partner_sync_switch"
                     )
-                },
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                modifier = Modifier.fillMaxWidth().height(52.dp).testTag("bedtime_save_btn")
-            ) {
-                Icon(Icons.Default.Bedtime, contentDescription = null, tint = BrandColors.ButterYellow, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Save Bedtime Sync & Exceptions", style = MaterialTheme.typography.labelLarge)
+                }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            // Audio Vibe Preview Selector
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "MORNING CHIME VIBE",
+                    fontFamily = MonoFontFamily,
+                    fontSize = 10.sp,
+                    letterSpacing = 0.9.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(
+                        ChimeType.TIBETAN to "Tibetan",
+                        ChimeType.PIANO to "Piano",
+                        ChimeType.RIVER to "River"
+                    ).forEach { (chime, label) ->
+                        val active = selectedChime == chime
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("bedtime_chime_${label.lowercase()}")
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    selectedChime = chime
+                                    onPlayChime(chime)
+                                },
+                            shape = RoundedCornerShape(16.dp),
+                            color = if (active) OneReflectionColors.InkPrimary else cardBg,
+                            border = BorderStroke(1.dp, if (active) OneReflectionColors.GoldLuminous.copy(alpha = 0.45f) else borderColor)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 11.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.MusicNote,
+                                    contentDescription = label,
+                                    tint = if (active) OneReflectionColors.GoldLuminous else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Text(
+                                    text = " $label",
+                                    fontFamily = BodyFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = if (active) Color.White else MaterialTheme.colorScheme.onBackground
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Save Button
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("bedtime_sync_save_button")
+                    .clip(RoundedCornerShape(22.dp))
+                    .clickable {
+                        onPlayChime(ChimeType.SOLFEGGIO)
+                        onDismiss()
+                    },
+                shape = RoundedCornerShape(22.dp),
+                color = OneReflectionColors.Terracotta
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 15.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Save Harmony Schedule",
+                        fontFamily = BodyFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.5.sp,
+                        color = Color.White
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(6.dp))
         }
     }
 }
 
 @Composable
-private fun TimeStepperTile(
-    label: String,
-    formattedTime: String,
+private fun TimeStepperCard(
+    title: String,
+    timeText: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    accent: Color,
     cardBg: Color,
-    textPrimary: Color,
-    textSecondary: Color,
-    onDecrement: () -> Unit,
-    onIncrement: () -> Unit,
+    borderColor: Color,
+    minusTag: String,
+    plusTag: String,
+    onMinus: () -> Unit,
+    onPlus: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        shape = RoundedCornerShape(18.dp),
+        modifier = modifier,
+        shape = RoundedCornerShape(22.dp),
         color = cardBg,
-        modifier = modifier
+        border = BorderStroke(1.dp, borderColor)
     ) {
-        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(label.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = textSecondary)
+        Column(
+            modifier = Modifier.padding(14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                Text(formattedTime, style = MaterialTheme.typography.headlineSmall, color = textPrimary)
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Surface(onClick = onDecrement, shape = CircleShape, color = BrandColors.SurfaceContainerHigh, modifier = Modifier.size(28.dp)) {
-                        Box(contentAlignment = Alignment.Center) { Text("-", fontWeight = FontWeight.Bold, color = BrandColors.OnSurfaceDark) }
-                    }
-                    Surface(onClick = onIncrement, shape = CircleShape, color = BrandColors.SurfaceContainerHigh, modifier = Modifier.size(28.dp)) {
-                        Box(contentAlignment = Alignment.Center) { Text("+", fontWeight = FontWeight.Bold, color = BrandColors.OnSurfaceDark) }
-                    }
+                Icon(icon, contentDescription = title, tint = accent, modifier = Modifier.size(15.dp))
+                Text(title, fontFamily = MonoFontFamily, fontSize = 9.5.sp, letterSpacing = 0.8.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Text(
+                text = timeText,
+                fontFamily = MonoFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 26.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .testTag(minusTag)
+                        .clip(CircleShape)
+                        .background(OneReflectionColors.SurfaceCardLow)
+                        .clickable { onMinus() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Filled.Remove, contentDescription = "Minus 15m", tint = OneReflectionColors.InkPrimary, modifier = Modifier.size(16.dp))
+                }
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .testTag(plusTag)
+                        .clip(CircleShape)
+                        .background(OneReflectionColors.InkPrimary)
+                        .clickable { onPlus() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = "Plus 15m", tint = Color.White, modifier = Modifier.size(16.dp))
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun BreakthroughToggle(
-    title: String,
-    subtitle: String,
-    checked: Boolean,
-    cardBg: Color,
-    textPrimary: Color,
-    textSecondary: Color,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Surface(shape = RoundedCornerShape(16.dp), color = cardBg) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                Text(title, style = MaterialTheme.typography.labelMedium, color = textPrimary)
-                Text(subtitle, fontSize = 10.sp, color = textSecondary)
-            }
-            OneReflectionSwitch(
-                checked = checked,
-                onCheckedChange = {
-                    ChimePlayer.play(ChimeType.CLICK)
-                    onCheckedChange(it)
-                },
-                checkedTrackColor = BrandColors.ButterYellow,
-                thumbColor = if (checked) BrandColors.OnSurfaceDark else Color.White
-            )
         }
     }
 }

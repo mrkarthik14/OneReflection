@@ -7,442 +7,931 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.EventRepeat
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Park
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import com.onereflection.app.data.ChimePlayer
-import com.onereflection.app.model.*
+import com.onereflection.app.model.CategoryColor
+import com.onereflection.app.model.ChimeType
+import com.onereflection.app.model.OneReflectionUiState
+import com.onereflection.app.model.ScreenId
+import com.onereflection.app.model.TaskCategory
+import com.onereflection.app.model.TaskItem
+import com.onereflection.app.model.TaskPriority
 import com.onereflection.app.ui.components.AvatarImage
-import com.onereflection.app.ui.theme.BrandColors
-import com.onereflection.app.ui.theme.toThemeStyle
-import com.onereflection.app.viewmodel.OneReflectionUiState
+import com.onereflection.app.ui.components.BotanicalTaskJourneyCard
+import com.onereflection.app.ui.theme.BodyFontFamily
+import com.onereflection.app.ui.theme.DisplayFontFamily
+import com.onereflection.app.ui.theme.LocalElementalPalette
+import com.onereflection.app.ui.theme.MonoFontFamily
+import com.onereflection.app.ui.theme.OneReflectionColors
+import com.onereflection.app.ui.theme.categoryCardBackground
+import com.onereflection.app.ui.theme.categoryPreviewColor
+import com.onereflection.app.ui.theme.priorityBadgeColors
+import kotlin.math.roundToInt
 
 @Composable
 fun TasksScreen(
-    state: OneReflectionUiState,
-    onBack: () -> Unit,
+    uiState: OneReflectionUiState,
+    onNavigate: (ScreenId) -> Unit,
     onOpenVoiceStudio: () -> Unit,
     onToggleTask: (String) -> Unit,
-    onAddTask: (title: String, categoryId: String, priority: TaskPriority) -> Unit,
+    onUpdateTaskProgress: (String, Int, Boolean) -> Unit,
+    onScheduleTaskForNextDay: (String) -> Unit,
+    onAddTask: (String, String, TaskPriority) -> Unit,
     onCyclePriority: (String) -> Unit,
     onAddCategory: (String, CategoryColor) -> Unit,
     onUpdateCategory: (String, String, CategoryColor) -> Unit,
-    onDeleteCategory: (String) -> Unit
+    onDeleteCategory: (String) -> Unit,
+    onPlayChime: (ChimeType) -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    BackHandler { onNavigate(ScreenId.HOME) }
 
-    val oledMode = state.oledMode
     var selectedCategoryId by remember { mutableStateOf("all") }
-    var sortMode by remember { mutableStateOf(TaskSortMode.PRIORITY_DESC) }
-    var activeDay by remember { mutableIntStateOf(16) }
-    var completedOpen by remember { mutableStateOf(true) }
     var showAddTaskDialog by remember { mutableStateOf(false) }
-    var showCategoryModal by remember { mutableStateOf(false) }
+    var showCategoryManager by remember { mutableStateOf(false) }
+    var showCompleted by remember { mutableStateOf(false) }
 
-    val textPrimary = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-    val textSecondary = if (oledMode) Color(0xFFA1A1AA) else BrandColors.OnSurfaceVariant
-    val cardBorder = if (oledMode) BrandColors.OledBorder else Color.Black.copy(alpha = 0.06f)
-
-    val filteredAndSorted = remember(state.tasks, selectedCategoryId, sortMode) {
-        val filtered = if (selectedCategoryId == "all") {
-            state.tasks
-        } else {
-            state.tasks.filter { it.categoryId == selectedCategoryId }
-        }
-        when (sortMode) {
-            TaskSortMode.PRIORITY_DESC -> filtered.sortedWith(compareByDescending<TaskItem> { it.priority.weight }.thenBy { it.dueTime })
-            TaskSortMode.PRIORITY_ASC -> filtered.sortedWith(compareBy<TaskItem> { it.priority.weight }.thenBy { it.dueTime })
-            TaskSortMode.TIME -> filtered.sortedBy { it.dueTime }
-            TaskSortMode.DEFAULT -> filtered
-        }
+    val oledMode = uiState.oledMode
+    val palette = LocalElementalPalette.current
+    val borderColor = palette.border
+    val filteredTasks = remember(uiState.tasks, selectedCategoryId) {
+        if (selectedCategoryId == "all") uiState.tasks
+        else uiState.tasks.filter { it.categoryId == selectedCategoryId }
     }
-
-    val days = remember { listOf("Mon" to 14, "Tue" to 15, "Wed" to 16, "Thu" to 17, "Fri" to 18, "Sat" to 19) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 110.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 164.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // 1. Header & Sync Score
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(BrandColors.ButterYellow)
-                            .padding(horizontal = 10.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.dp)
-                    ) {
-                        Icon(Icons.Default.Celebration, contentDescription = null, tint = BrandColors.ButterYellowText, modifier = Modifier.size(14.dp))
-                        Text("SYNCHRONIZED CIRCLE", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BrandColors.ButterYellowText)
-                    }
-                    Row(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerHigh)
-                            .padding(horizontal = 10.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Stars,
-                            contentDescription = null,
-                            tint = if (oledMode) BrandColors.CandyPink else BrandColors.PrimaryPlum,
-                            modifier = Modifier.size(15.dp)
-                        )
-                        Text("8.8 Sync Score", style = MaterialTheme.typography.labelSmall, color = textPrimary)
-                    }
-                }
-                Column {
-                    Text("Tasks & Shared Flows", style = MaterialTheme.typography.headlineMedium, color = textPrimary)
-                    Text("Conquer your day alongside your circle.", style = MaterialTheme.typography.bodySmall, color = textSecondary)
-                }
-            }
-        }
-
-        // 2. Weekly Calendar Strip
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                days.forEach { (name, num) ->
-                    val isActive = num == activeDay
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(64.dp)
-                            .clip(RoundedCornerShape(18.dp))
-                            .background(
-                                when {
-                                    isActive -> BrandColors.ButterYellow
-                                    oledMode -> BrandColors.OledCard
-                                    else -> BrandColors.SurfaceContainerLow
-                                }
-                            )
-                            .clickable {
-                                ChimePlayer.play(ChimeType.CLICK)
-                                activeDay = num
-                            },
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(name, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = if (isActive) BrandColors.ButterYellowText else textSecondary)
-                        Text(num.toString(), style = MaterialTheme.typography.titleMedium, color = if (isActive) BrandColors.ButterYellowText else textPrimary)
-                        if (isActive) {
-                            Box(modifier = Modifier.padding(top = 2.dp).size(5.dp).clip(CircleShape).background(BrandColors.ButterYellowText))
-                        }
-                    }
-                }
-            }
-        }
-
-        // 3. Dynamic Category Filter Chips + Tags Manager
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                FilterPill(
-                    label = "All",
-                    count = state.tasks.size,
-                    dotColor = null,
-                    selected = selectedCategoryId == "all",
-                    oledMode = oledMode,
-                    onClick = {
-                        ChimePlayer.play(ChimeType.CLICK)
-                        selectedCategoryId = "all"
-                    }
-                )
-                state.categories.forEach { cat ->
-                    val count = state.tasks.count { it.categoryId == cat.id }
-                    FilterPill(
-                        label = cat.name,
-                        count = count,
-                        dotColor = cat.color.toThemeStyle().preview,
-                        selected = selectedCategoryId == cat.id,
-                        oledMode = oledMode,
-                        onClick = {
-                            ChimePlayer.play(ChimeType.CLICK)
-                            selectedCategoryId = cat.id
-                        }
-                    )
-                }
-                Surface(
-                    onClick = {
-                        ChimePlayer.play(ChimeType.CLICK)
-                        showCategoryModal = true
-                    },
-                    shape = CircleShape,
-                    color = BrandColors.PinkFixed,
-                    modifier = Modifier.height(36.dp).testTag("tasks_manage_tags_btn")
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(Icons.Default.AddCircle, contentDescription = null, tint = BrandColors.PrimaryPlum, modifier = Modifier.size(15.dp))
-                        Text("Tags", style = MaterialTheme.typography.labelMedium, color = BrandColors.PrimaryPlum)
-                    }
-                }
-            }
-        }
-
-        // 4. Sort Controller Bar
+        // Editorial Header
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Bottom
             ) {
-                Text(
-                    text = "FLOWS (${filteredAndSorted.size})",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = textSecondary
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = "SHARED FLOWS & LISTS",
+                        fontFamily = MonoFontFamily,
+                        fontSize = 10.5.sp,
+                        letterSpacing = 1.2.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "Tasks & Flows.",
+                        fontFamily = DisplayFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 31.sp,
+                        letterSpacing = (-0.6).sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
                 Row(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerHigh)
-                        .padding(3.dp),
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    SortButton("High ↓", sortMode == TaskSortMode.PRIORITY_DESC, oledMode) { sortMode = TaskSortMode.PRIORITY_DESC }
-                    SortButton("Low ↑", sortMode == TaskSortMode.PRIORITY_ASC, oledMode) { sortMode = TaskSortMode.PRIORITY_ASC }
-                    SortButton("Time", sortMode == TaskSortMode.TIME, oledMode) { sortMode = TaskSortMode.TIME }
+                    Surface(
+                        modifier = Modifier
+                            .testTag("tasks_open_great_tree_button")
+                            .clip(CircleShape)
+                            .clickable { onNavigate(ScreenId.SANCTUARY_TREE) },
+                        shape = CircleShape,
+                        color = palette.surfaceTint,
+                        border = BorderStroke(1.dp, palette.primary.copy(alpha = 0.35f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 11.dp, vertical = 9.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Park,
+                                contentDescription = "Open Great Tree Harvest",
+                                tint = palette.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Tree",
+                                fontFamily = BodyFontFamily,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = palette.primary
+                            )
+                        }
+                    }
+
+                    Surface(
+                        modifier = Modifier
+                            .testTag("tasks_categories_button")
+                            .clip(CircleShape)
+                            .clickable { showCategoryManager = true },
+                        shape = CircleShape,
+                        color = palette.surfaceCard,
+                        border = BorderStroke(1.dp, borderColor)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Tune,
+                                contentDescription = "Manage Categories",
+                                tint = palette.primary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                text = "Lists",
+                                fontFamily = BodyFontFamily,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
                 }
             }
         }
 
-        // 5. Bento Tasks Deck
-        if (filteredAndSorted.isEmpty()) {
-            item {
+        // Botanical Completion Journey Visualization (grows live as tasks are completed!)
+        item {
+            BotanicalTaskJourneyCard(
+                activeTasks = uiState.tasks,
+                completedTasks = uiState.completedTasks,
+                oledMode = oledMode
+            )
+        }
+
+        // Category Filter Pills
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val allSelected = selectedCategoryId == "all"
                 Surface(
-                    shape = RoundedCornerShape(26.dp),
-                    color = if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerLow,
-                    border = BorderStroke(1.dp, cardBorder)
+                    modifier = Modifier
+                        .testTag("tasks_filter_all")
+                        .clip(CircleShape)
+                        .clickable { selectedCategoryId = "all" },
+                    shape = CircleShape,
+                    color = when {
+                        allSelected && oledMode -> OneReflectionColors.TerracottaLight
+                        allSelected -> OneReflectionColors.InkPrimary
+                        oledMode -> OneReflectionColors.OledSurface
+                        else -> OneReflectionColors.SurfaceCard
+                    },
+                    border = BorderStroke(1.dp, if (allSelected) Color.Transparent else borderColor)
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth().padding(28.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    Text(
+                        text = "All (${uiState.tasks.size})",
+                        fontFamily = BodyFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.5.sp,
+                        color = when {
+                            allSelected && oledMode -> OneReflectionColors.InkPrimary
+                            allSelected -> Color.White
+                            else -> MaterialTheme.colorScheme.onBackground
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp)
+                    )
+                }
+
+                uiState.categories.forEach { cat ->
+                    val selected = selectedCategoryId == cat.id
+                    Surface(
+                        modifier = Modifier
+                            .testTag("tasks_filter_${cat.id}")
+                            .clip(CircleShape)
+                            .clickable { selectedCategoryId = cat.id },
+                        shape = CircleShape,
+                        color = when {
+                            selected && oledMode -> OneReflectionColors.TerracottaLight
+                            selected -> OneReflectionColors.InkPrimary
+                            oledMode -> OneReflectionColors.OledSurface
+                            else -> OneReflectionColors.SurfaceCard
+                        },
+                        border = BorderStroke(1.dp, if (selected) Color.Transparent else borderColor)
                     ) {
-                        Icon(Icons.Default.TaskAlt, contentDescription = null, tint = textSecondary, modifier = Modifier.size(32.dp))
-                        Text("No tasks in this view", style = MaterialTheme.typography.titleSmall, color = textPrimary)
-                        Text("Tap + Add New Task below to create one", style = MaterialTheme.typography.bodySmall, color = textSecondary)
+                        Row(
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(7.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(categoryPreviewColor(cat.color))
+                            )
+                            Text(
+                                text = cat.name,
+                                fontFamily = BodyFontFamily,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.5.sp,
+                                color = when {
+                                    selected && oledMode -> OneReflectionColors.InkPrimary
+                                    selected -> Color.White
+                                    else -> MaterialTheme.colorScheme.onBackground
+                                }
+                            )
+                        }
                     }
                 }
             }
-        } else {
-            items(filteredAndSorted, key = { it.id }) { task ->
-                val cat = state.categories.find { it.id == task.categoryId }
-                val style = (cat?.color ?: CategoryColor.SLATE).toThemeStyle()
-                val cardBg = if (oledMode) BrandColors.OledCard else style.cardBgLight
-                val cardText = if (oledMode) Color.White else BrandColors.OnSurfaceDark
+        }
+
+        // Quick Creation Bar
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("tasks_add_button")
+                        .clip(RoundedCornerShape(22.dp))
+                        .clickable { showAddTaskDialog = true },
+                    shape = RoundedCornerShape(22.dp),
+                    color = if (oledMode) OneReflectionColors.OledSurfaceElevated else OneReflectionColors.InkPrimary,
+                    border = BorderStroke(1.dp, if (oledMode) OneReflectionColors.GoldLuminous.copy(alpha = 0.3f) else Color.Transparent)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(vertical = 14.dp, horizontal = 18.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = "New Shared Task",
+                            tint = OneReflectionColors.GoldLuminous,
+                            modifier = Modifier.size(19.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "New Shared Task",
+                            fontFamily = BodyFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    }
+                }
 
                 Surface(
-                    shape = RoundedCornerShape(26.dp),
-                    color = cardBg,
-                    border = BorderStroke(1.dp, cardBorder)
+                    modifier = Modifier
+                        .size(48.dp)
+                        .testTag("tasks_voice_brief_button")
+                        .clip(CircleShape)
+                        .clickable { onOpenVoiceStudio() },
+                    shape = CircleShape,
+                    color = if (oledMode) OneReflectionColors.OledSurfaceElevated else OneReflectionColors.PeachMist,
+                    border = BorderStroke(1.dp, OneReflectionColors.Terracotta.copy(alpha = 0.3f))
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Filled.Mic,
+                            contentDescription = "Add voice task brief",
+                            tint = if (oledMode) OneReflectionColors.TerracottaLight else OneReflectionColors.Terracotta,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Active Editorial Task Cards
+        items(filteredTasks, key = { it.id }) { task ->
+            val catColor = uiState.categories.find { it.id == task.categoryId }?.color ?: CategoryColor.SLATE
+            TaskEditorialCard(
+                task = task,
+                catColor = catColor,
+                oledMode = oledMode,
+                onToggle = { onToggleTask(task.id) },
+                onUpdateProgress = { pct, notify -> onUpdateTaskProgress(task.id, pct, notify) },
+                onScheduleNextDay = { onScheduleTaskForNextDay(task.id) },
+                onCyclePriority = { onCyclePriority(task.id) },
+                onPlayVoice = { onPlayChime(ChimeType.SOLFEGGIO) }
+            )
+        }
+
+        // Completed Tasks Accordion
+        if (uiState.completedTasks.isNotEmpty()) {
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("tasks_completed_toggle")
+                            .clip(RoundedCornerShape(18.dp))
+                            .clickable { showCompleted = !showCompleted },
+                        shape = RoundedCornerShape(18.dp),
+                        color = palette.surfaceCard,
+                        border = BorderStroke(1.dp, borderColor)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "COMPLETED FLOWS (${uiState.completedTasks.size})",
+                                fontFamily = MonoFontFamily,
+                                fontSize = 10.5.sp,
+                                letterSpacing = 1.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Icon(
+                                imageVector = if (showCompleted) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                contentDescription = "Toggle completed tasks",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+
+                    AnimatedVisibility(visible = showCompleted) {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            uiState.completedTasks.forEach { task ->
+                                val catColor = uiState.categories.find { it.id == task.categoryId }?.color ?: CategoryColor.SLATE
+                                TaskEditorialCard(
+                                    task = task,
+                                    catColor = catColor,
+                                    oledMode = oledMode,
+                                    onToggle = { onToggleTask(task.id) },
+                                    onUpdateProgress = { pct, notify -> onUpdateTaskProgress(task.id, pct, notify) },
+                                    onScheduleNextDay = { onScheduleTaskForNextDay(task.id) },
+                                    onCyclePriority = { onCyclePriority(task.id) },
+                                    onPlayVoice = { onPlayChime(ChimeType.CLICK) }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showAddTaskDialog) {
+        AddTaskDialog(
+            categories = uiState.categories,
+            onDismiss = { showAddTaskDialog = false },
+            onCreate = { title, catId, priority ->
+                onAddTask(title, catId, priority)
+                showAddTaskDialog = false
+            }
+        )
+    }
+
+    if (showCategoryManager) {
+        CategoryManagerDialog(
+            categories = uiState.categories,
+            onDismiss = { showCategoryManager = false },
+            onAdd = onAddCategory,
+            onDelete = onDeleteCategory
+        )
+    }
+}
+
+@Composable
+private fun TaskEditorialCard(
+    task: TaskItem,
+    catColor: CategoryColor,
+    oledMode: Boolean,
+    onToggle: () -> Unit,
+    onUpdateProgress: (Int, Boolean) -> Unit,
+    onScheduleNextDay: () -> Unit,
+    onCyclePriority: () -> Unit,
+    onPlayVoice: () -> Unit
+) {
+    val palette = LocalElementalPalette.current
+    val accent = categoryPreviewColor(catColor)
+    val tintBg = categoryCardBackground(catColor, oledMode)
+    val (prioBg, prioInk) = priorityBadgeColors(task.priority)
+    val borderColor = palette.border
+
+    var sliderDraft by remember(task.id, task.progressPercent) {
+        mutableFloatStateOf(task.progressPercent.toFloat())
+    }
+    val shownPercent = sliderDraft.roundToInt().coerceIn(0, 100)
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(if (task.completed) 0.68f else 1f)
+            .testTag("task_card_${task.id}"),
+        shape = RoundedCornerShape(24.dp),
+        color = palette.surfaceCard.copy(alpha = 0.96f),
+        border = BorderStroke(1.dp, borderColor),
+        shadowElevation = if (!oledMode && !task.completed) 2.dp else 0.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Tactile Circle Checkbox
+                Box(
+                    modifier = Modifier
+                        .padding(top = 2.dp)
+                        .size(26.dp)
+                        .testTag("task_check_${task.id}")
+                        .clip(CircleShape)
+                        .background(if (task.completed) palette.primary else Color.Transparent)
+                        .border(2.dp, palette.primary, CircleShape)
+                        .clickable { onToggle() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (task.completed) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "Completed",
+                            tint = palette.onPrimary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                    }
+                }
+
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(7.dp)
+                                    .clip(CircleShape)
+                                    .background(accent)
+                            )
+                            Text(
+                                text = task.category.uppercase(),
+                                fontFamily = MonoFontFamily,
+                                fontSize = 10.sp,
+                                letterSpacing = 0.9.sp,
+                                color = palette.primary
+                            )
+                        }
+
+                        Surface(
+                            modifier = Modifier
+                                .testTag("task_priority_${task.id}")
+                                .clip(CircleShape)
+                                .clickable { onCyclePriority() },
+                            shape = CircleShape,
+                            color = if (oledMode) palette.surfaceElevated else prioBg
+                        ) {
+                            Text(
+                                text = task.priority.label,
+                                fontFamily = MonoFontFamily,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (oledMode) palette.primaryBright else prioInk,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = task.title,
+                        fontFamily = DisplayFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                        lineHeight = 22.sp,
+                        textDecoration = if (task.completed) TextDecoration.LineThrough else TextDecoration.None,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                    if (task.description.isNotBlank()) {
+                        Text(
+                            text = task.description,
+                            fontFamily = BodyFontFamily,
+                            fontSize = 13.sp,
+                            lineHeight = 19.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // Interactive Progress Slider + Quick 50% Chip + Complete Next Day Control
+            if (!task.completed) {
+                Surface(
+                    shape = RoundedCornerShape(18.dp),
+                    color = palette.surfaceElevated.copy(alpha = 0.72f),
+                    border = BorderStroke(1.dp, palette.border.copy(alpha = 0.7f))
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(18.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Text(
+                                text = "PROGRESS · $shownPercent%",
+                                fontFamily = MonoFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.5.sp,
+                                letterSpacing = 0.7.sp,
+                                color = palette.primary
+                            )
+
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Box(
+                                Surface(
                                     modifier = Modifier
+                                        .testTag("task_half_chip_${task.id}")
                                         .clip(CircleShape)
-                                        .background(if (oledMode) Color(0xFF27272A) else style.badgeBg)
-                                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                                        .clickable {
+                                            sliderDraft = 50f
+                                            onUpdateProgress(50, true)
+                                        },
+                                    shape = CircleShape,
+                                    color = if (shownPercent == 50) palette.primary else palette.surfaceCard,
+                                    border = BorderStroke(1.dp, palette.border)
                                 ) {
                                     Text(
-                                        text = cat?.name ?: task.category,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = if (oledMode) Color.White else style.badgeText
+                                        text = "50%",
+                                        fontFamily = MonoFontFamily,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 10.sp,
+                                        color = if (shownPercent == 50) palette.onPrimary else MaterialTheme.colorScheme.onBackground,
+                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
                                     )
                                 }
 
-                                PriorityBadge(
-                                    priority = task.priority,
-                                    onClick = { onCyclePriority(task.id) }
-                                )
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .background(if (oledMode) Color(0xFF27272A) else Color.White.copy(alpha = 0.85f))
-                                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(Icons.Default.Schedule, contentDescription = null, tint = textSecondary, modifier = Modifier.size(13.dp))
-                                Text(task.dueTime, style = MaterialTheme.typography.labelSmall, color = if (oledMode) Color.White else BrandColors.OnSurfaceDark)
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Top
-                        ) {
-                            Column(modifier = Modifier.weight(1f).padding(end = 10.dp)) {
-                                Text(task.title, style = MaterialTheme.typography.titleLarge, color = cardText)
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(
-                                    text = task.description,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = if (oledMode) Color(0xFFA1A1AA) else BrandColors.OnSurfaceVariant
-                                )
-                            }
-
-                            Surface(
-                                onClick = { onToggleTask(task.id) },
-                                shape = CircleShape,
-                                color = if (oledMode) Color(0xFF27272A) else Color.White,
-                                modifier = Modifier.size(36.dp).testTag("task_complete_${task.id}")
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Circle,
-                                        contentDescription = "Mark task done",
-                                        tint = BrandColors.OutlineVariant,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        if (task.subtasksDone != null || task.voiceBriefQuote != null || task.codeBranch != null || task.assignees.isNotEmpty() || task.streak != null) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                if (task.subtasksDone != null && task.subtasksTotal != null) {
-                                    TaskMetaPill("${task.subtasksDone}/${task.subtasksTotal} subtasks", oledMode)
-                                }
-                                if (task.voiceBriefQuote != null) {
-                                    Surface(
-                                        onClick = { ChimePlayer.play(ChimeType.TIBETAN) },
-                                        shape = CircleShape,
-                                        color = if (oledMode) Color(0xFF27272A) else Color.White.copy(alpha = 0.9f)
+                                Surface(
+                                    modifier = Modifier
+                                        .testTag("task_next_day_${task.id}")
+                                        .clip(CircleShape)
+                                        .clickable { onScheduleNextDay() },
+                                    shape = CircleShape,
+                                    color = if (task.carryOverNextDay) palette.primary else palette.surfaceTint,
+                                    border = BorderStroke(1.dp, palette.primary.copy(alpha = 0.35f))
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                                     ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                        ) {
-                                            Icon(
-                                                Icons.Default.PlayCircle,
-                                                contentDescription = null,
-                                                tint = if (oledMode) BrandColors.CandyPink else BrandColors.PrimaryPlum,
-                                                modifier = Modifier.size(14.dp)
-                                            )
-                                            Text(
-                                                text = task.voiceBriefDuration?.let { "Voice: $it" } ?: "Voice Note",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-                                            )
-                                        }
+                                        Icon(
+                                            imageVector = Icons.Filled.EventRepeat,
+                                            contentDescription = "Complete remaining task next day",
+                                            tint = if (task.carryOverNextDay) palette.onPrimary else palette.primary,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Text(
+                                            text = if (task.carryOverNextDay) "Tomorrow ✓" else "Next Day",
+                                            fontFamily = BodyFontFamily,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 10.5.sp,
+                                            color = if (task.carryOverNextDay) palette.onPrimary else palette.primary
+                                        )
                                     }
                                 }
-                                if (task.codeBranch != null) {
-                                    TaskMetaPill(task.codeBranch, oledMode)
-                                }
-                                if (task.streak != null) {
-                                    TaskMetaPill("${task.streak}d streak", oledMode)
-                                }
-                                Spacer(modifier = Modifier.weight(1f))
-                                if (task.assignees.isNotEmpty()) {
-                                    Row(horizontalArrangement = Arrangement.spacedBy((-8).dp)) {
-                                        task.assignees.forEach { assignee ->
-                                            if (assignee.avatar != null) {
-                                                AvatarImage(
-                                                    url = assignee.avatar,
-                                                    initials = assignee.name.take(2),
-                                                    contentDescription = assignee.name,
-                                                    size = 28.dp
-                                                )
-                                            } else {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(28.dp)
-                                                        .clip(CircleShape)
-                                                        .background(BrandColors.LavenderContainer)
-                                                        .border(2.dp, Color.White, CircleShape),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Text(
-                                                        text = assignee.initials ?: assignee.name.take(2),
-                                                        fontSize = 10.sp,
-                                                        fontWeight = FontWeight.Bold,
-                                                        color = BrandColors.LavenderText
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                            }
+                        }
+
+                        Slider(
+                            value = sliderDraft,
+                            onValueChange = { raw ->
+                                val snapped = ((raw / 5f).roundToInt() * 5).coerceIn(0, 100)
+                                sliderDraft = snapped.toFloat()
+                                onUpdateProgress(snapped, false)
+                            },
+                            onValueChangeFinished = {
+                                val finalPct = sliderDraft.roundToInt().coerceIn(0, 100)
+                                onUpdateProgress(finalPct, true)
+                            },
+                            valueRange = 0f..100f,
+                            colors = SliderDefaults.colors(
+                                thumbColor = palette.primary,
+                                activeTrackColor = palette.primary,
+                                inactiveTrackColor = palette.surfaceCard
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("task_progress_slider_${task.id}")
+                        )
+                    }
+                }
+            }
+
+            // Per-User Completion Percentages Breakdown
+            if (task.assignees.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    task.assignees.forEach { person ->
+                        val userPct = if (task.completed) 100 else person.completionPercent
+                        Surface(
+                            shape = CircleShape,
+                            color = palette.surfaceElevated.copy(alpha = 0.85f),
+                            border = BorderStroke(1.dp, palette.border)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(start = 4.dp, end = 10.dp, top = 4.dp, bottom = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                AvatarImage(
+                                    url = person.avatar,
+                                    fallbackInitials = person.initials ?: person.name.take(2).uppercase(),
+                                    contentDescription = "${person.name} $userPct% completed",
+                                    size = 24.dp,
+                                    ringColor = palette.primary,
+                                    ringWidth = 1.2.dp
+                                )
+                                Text(
+                                    text = person.name,
+                                    fontFamily = BodyFontFamily,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 11.5.sp,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "$userPct%",
+                                    fontFamily = MonoFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 10.5.sp,
+                                    color = palette.primary
+                                )
                             }
                         }
                     }
                 }
             }
-        }
 
-        // 6. Completed Today Accordion
-        item {
-            Surface(
-                shape = RoundedCornerShape(26.dp),
-                color = if (oledMode) BrandColors.OledCard else BrandColors.SurfaceContainerLow,
-                border = BorderStroke(1.dp, cardBorder)
-            ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            if (!task.voiceBriefQuote.isNullOrBlank()) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable { onPlayVoice() },
+                    shape = RoundedCornerShape(16.dp),
+                    color = if (oledMode) palette.surfaceElevated else tintBg
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                ChimePlayer.play(ChimeType.CLICK)
-                                completedOpen = !completedOpen
-                            },
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Mic,
+                            contentDescription = "Play voice brief",
+                            tint = palette.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "\"${task.voiceBriefQuote}\"",
+                            fontFamily = DisplayFontFamily,
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 12.5.sp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = task.voiceBriefDuration ?: "0:12",
+                            fontFamily = MonoFontFamily,
+                            fontSize = 10.5.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Schedule,
+                        contentDescription = "Due time",
+                        tint = if (task.carryOverNextDay) palette.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Text(
+                        text = task.dueTime,
+                        fontFamily = MonoFontFamily,
+                        fontSize = 11.5.sp,
+                        fontWeight = if (task.carryOverNextDay) FontWeight.Bold else FontWeight.Normal,
+                        color = if (task.carryOverNextDay) palette.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Text(
+                    text = if (task.completed) "HARVESTED 100%" else "${100 - shownPercent}% LEFT",
+                    fontFamily = MonoFontFamily,
+                    fontSize = 10.sp,
+                    color = palette.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AddTaskDialog(
+    categories: List<TaskCategory>,
+    onDismiss: () -> Unit,
+    onCreate: (String, String, TaskPriority) -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var selectedCatId by remember { mutableStateOf(categories.firstOrNull()?.id ?: "cat-home") }
+    var selectedPriority by remember { mutableStateOf(TaskPriority.MEDIUM) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "New Shared Flow",
+                fontFamily = DisplayFontFamily,
+                fontWeight = FontWeight.SemiBold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Task title") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text("Category", fontFamily = MonoFontFamily, fontSize = 10.sp)
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    categories.forEach { cat ->
+                        val selected = selectedCatId == cat.id
+                        Surface(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .clickable { selectedCatId = cat.id },
+                            shape = CircleShape,
+                            color = if (selected) OneReflectionColors.Terracotta else OneReflectionColors.SurfaceCardLow
+                        ) {
+                            Text(
+                                text = cat.name,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (selected) Color.White else OneReflectionColors.InkPrimary,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+                Text("Priority", fontFamily = MonoFontFamily, fontSize = 10.sp)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    TaskPriority.entries.forEach { prio ->
+                        val selected = selectedPriority == prio
+                        Surface(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .clickable { selectedPriority = prio },
+                            shape = CircleShape,
+                            color = if (selected) OneReflectionColors.InkPrimary else OneReflectionColors.SurfaceCardLow
+                        ) {
+                            Text(
+                                text = prio.label,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (selected) Color.White else OneReflectionColors.InkPrimary,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { if (title.isNotBlank()) onCreate(title, selectedCatId, selectedPriority) },
+                colors = ButtonDefaults.buttonColors(containerColor = OneReflectionColors.Terracotta)
+            ) {
+                Text("Create", color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
+@Composable
+private fun CategoryManagerDialog(
+    categories: List<TaskCategory>,
+    onDismiss: () -> Unit,
+    onAdd: (String, CategoryColor) -> Unit,
+    onDelete: (String) -> Unit
+) {
+    var newName by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf(CategoryColor.MATCHA) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Manage Categories",
+                fontFamily = DisplayFontFamily,
+                fontWeight = FontWeight.SemiBold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                categories.forEach { cat ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -452,503 +941,72 @@ fun TasksScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .size(24.dp)
+                                    .size(12.dp)
                                     .clip(CircleShape)
-                                    .background(if (oledMode) Color(0xFF27272A) else BrandColors.SurfaceContainerHighest),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = state.completedTasks.size.toString(),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = textPrimary
-                                )
-                            }
-                            Text("Completed Today", style = MaterialTheme.typography.titleMedium, color = textPrimary)
+                                    .background(categoryPreviewColor(cat.color))
+                            )
+                            Text(cat.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                         }
-                        Icon(
-                            imageVector = if (completedOpen) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                            contentDescription = "Toggle completed list",
-                            tint = textSecondary
-                        )
-                    }
-
-                    AnimatedVisibility(visible = completedOpen) {
-                        Column(
-                            modifier = Modifier.padding(top = 12.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            state.completedTasks.forEach { done ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(if (oledMode) BrandColors.OledBlack else Color.White.copy(alpha = 0.85f))
-                                        .clickable { onToggleTask(done.id) }
-                                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        modifier = Modifier.weight(1f)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.CheckCircle,
-                                            contentDescription = "Restore task",
-                                            tint = if (oledMode) BrandColors.ButterYellow else BrandColors.SecondaryGold,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                        Text(
-                                            text = done.title,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            textDecoration = TextDecoration.LineThrough,
-                                            color = textSecondary,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-                                    Text(done.dueTime, fontSize = 10.sp, color = textSecondary)
-                                }
-                            }
+                        if (categories.size > 1) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = "Delete category",
+                                tint = OneReflectionColors.DangerInk,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickable { onDelete(cat.id) }
+                            )
                         }
                     }
                 }
-            }
-        }
-
-        // 7. Bottom Add Task + Voice Button Row
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = {
-                        ChimePlayer.play(ChimeType.CLICK)
-                        showAddTaskDialog = true
-                    },
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = BrandColors.OnSurfaceDark,
-                        contentColor = Color.White
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(52.dp)
-                        .testTag("tasks_add_btn")
-                ) {
-                    Icon(Icons.Default.AddCircle, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Add New Task", style = MaterialTheme.typography.titleSmall)
-                }
-
-                Surface(
-                    onClick = {
-                        ChimePlayer.play(ChimeType.TIBETAN)
-                        onOpenVoiceStudio()
-                    },
-                    shape = CircleShape,
-                    color = BrandColors.ButterYellow,
-                    modifier = Modifier.size(52.dp).testTag("tasks_voice_btn")
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.Mic,
-                            contentDescription = "Voice to Task",
-                            tint = BrandColors.ButterYellowText,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    if (showAddTaskDialog) {
-        AddTaskDialog(
-            categories = state.categories,
-            oledMode = oledMode,
-            onDismiss = { showAddTaskDialog = false },
-            onSave = { title, catId, prio ->
-                onAddTask(title, catId, prio)
-                showAddTaskDialog = false
-            }
-        )
-    }
-
-    if (showCategoryModal) {
-        CategoryManagerDialog(
-            categories = state.categories,
-            oledMode = oledMode,
-            onDismiss = { showCategoryModal = false },
-            onAdd = onAddCategory,
-            onUpdate = onUpdateCategory,
-            onDelete = onDeleteCategory
-        )
-    }
-}
-
-@Composable
-private fun FilterPill(
-    label: String,
-    count: Int,
-    dotColor: Color?,
-    selected: Boolean,
-    oledMode: Boolean,
-    onClick: () -> Unit
-) {
-    Surface(
-        onClick = onClick,
-        shape = CircleShape,
-        color = when {
-            selected -> BrandColors.OnSurfaceDark
-            oledMode -> BrandColors.OledCard
-            else -> BrandColors.SurfaceContainerHigh
-        },
-        modifier = Modifier.height(36.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            if (dotColor != null) {
-                Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(dotColor))
-            }
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = if (selected) Color.White else if (oledMode) Color(0xFFD4D4D8) else BrandColors.OnSurfaceDark
-            )
-            Text(
-                text = count.toString(),
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (selected) Color.White.copy(alpha = 0.8f) else BrandColors.OnSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-private fun SortButton(label: String, selected: Boolean, oledMode: Boolean, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .clip(CircleShape)
-            .background(if (selected) BrandColors.OnSurfaceDark else Color.Transparent)
-            .clickable {
-                ChimePlayer.play(ChimeType.CLICK)
-                onClick()
-            }
-            .padding(horizontal = 10.dp, vertical = 6.dp)
-    ) {
-        Text(
-            text = label,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (selected) Color.White else if (oledMode) Color(0xFFA1A1AA) else BrandColors.OnSurfaceVariant
-        )
-    }
-}
-
-@Composable
-private fun PriorityBadge(priority: TaskPriority, onClick: () -> Unit) {
-    val (bg, fg) = when (priority) {
-        TaskPriority.HIGH -> BrandColors.HighPriorityBg to BrandColors.HighPriorityText
-        TaskPriority.MEDIUM -> BrandColors.ButterYellow.copy(alpha = 0.78f) to BrandColors.ButterYellowText
-        TaskPriority.LOW -> BrandColors.Matcha.copy(alpha = 0.65f) to BrandColors.MatchaDark
-    }
-    Surface(
-        onClick = onClick,
-        shape = CircleShape,
-        color = bg
-    ) {
-        Text(
-            text = priority.label,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold,
-            color = fg,
-            modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp)
-        )
-    }
-}
-
-@Composable
-private fun TaskMetaPill(text: String, oledMode: Boolean) {
-    Box(
-        modifier = Modifier
-            .clip(CircleShape)
-            .background(if (oledMode) Color(0xFF27272A) else Color.White.copy(alpha = 0.9f))
-            .padding(horizontal = 10.dp, vertical = 5.dp)
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall,
-            color = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-        )
-    }
-}
-
-@Composable
-private fun AddTaskDialog(
-    categories: List<TaskCategory>,
-    oledMode: Boolean,
-    onDismiss: () -> Unit,
-    onSave: (String, String, TaskPriority) -> Unit
-) {
-    var title by remember { mutableStateOf("") }
-    var selectedCatId by remember { mutableStateOf(categories.firstOrNull()?.id ?: "cat-work") }
-    var selectedPriority by remember { mutableStateOf(TaskPriority.MEDIUM) }
-
-    val dialogBg = if (oledMode) BrandColors.OledCard else Color.White
-    val textPrimary = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = dialogBg,
-            border = BorderStroke(1.dp, if (oledMode) BrandColors.OledBorder else Color.Black.copy(alpha = 0.08f))
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("New Flow or Task", style = MaterialTheme.typography.titleLarge, color = textPrimary)
-                    IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = textPrimary)
-                    }
-                }
-
+                Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    placeholder = { Text("e.g. Prep dinner sourdough or review designs...") },
+                    value = newName,
+                    onValueChange = { newName = it },
+                    label = { Text("New category name") },
                     singleLine = true,
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth().testTag("add_task_input")
-                )
-
-                Text("SELECT TAG / CATEGORY", style = MaterialTheme.typography.labelSmall, color = BrandColors.OnSurfaceVariant)
-                Row(
-                    modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    categories.forEach { cat ->
-                        val isSel = cat.id == selectedCatId
-                        Surface(
-                            onClick = { selectedCatId = cat.id },
-                            shape = CircleShape,
-                            color = if (isSel) BrandColors.OnSurfaceDark else BrandColors.SurfaceContainerLow
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(5.dp)
-                            ) {
-                                Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(cat.color.toThemeStyle().preview))
-                                Text(
-                                    text = cat.name,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = if (isSel) Color.White else BrandColors.OnSurfaceDark
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Text("PRIORITY LEVEL", style = MaterialTheme.typography.labelSmall, color = BrandColors.OnSurfaceVariant)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    listOf(TaskPriority.LOW, TaskPriority.MEDIUM, TaskPriority.HIGH).forEach { prio ->
-                        val isSel = selectedPriority == prio
-                        Surface(
-                            onClick = { selectedPriority = prio },
-                            shape = RoundedCornerShape(14.dp),
-                            color = if (isSel) BrandColors.OnSurfaceDark else BrandColors.SurfaceContainerLow,
-                            modifier = Modifier.weight(1f).height(40.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = prio.label,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = if (isSel) Color.White else BrandColors.OnSurfaceDark
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        onClick = { onSave(title, selectedCatId, selectedPriority) },
-                        enabled = title.isNotBlank(),
-                        shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                        modifier = Modifier.weight(1f).height(46.dp).testTag("save_task_btn")
-                    ) {
-                        Text("Save Task", style = MaterialTheme.typography.labelLarge)
-                    }
-                    OutlinedButton(
-                        onClick = onDismiss,
-                        shape = CircleShape,
-                        modifier = Modifier.height(46.dp)
-                    ) {
-                        Text("Cancel", style = MaterialTheme.typography.labelMedium)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CategoryManagerDialog(
-    categories: List<TaskCategory>,
-    oledMode: Boolean,
-    onDismiss: () -> Unit,
-    onAdd: (String, CategoryColor) -> Unit,
-    onUpdate: (String, String, CategoryColor) -> Unit,
-    onDelete: (String) -> Unit
-) {
-    var nameInput by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf(CategoryColor.PINK) }
-    var editingId by remember { mutableStateOf<String?>(null) }
-
-    val dialogBg = if (oledMode) BrandColors.OledCard else Color.White
-    val textPrimary = if (oledMode) Color.White else BrandColors.OnSurfaceDark
-
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = dialogBg,
-            border = BorderStroke(1.dp, if (oledMode) BrandColors.OledBorder else Color.Black.copy(alpha = 0.08f))
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Custom Task Tags", style = MaterialTheme.typography.titleMedium, color = textPrimary)
-                        Text("Persistent pastel color badges", style = MaterialTheme.typography.bodySmall, color = BrandColors.OnSurfaceVariant)
-                    }
-                    IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = textPrimary)
-                    }
-                }
-
-                OutlinedTextField(
-                    value = nameInput,
-                    onValueChange = { nameInput = it },
-                    placeholder = { Text("Tag name (e.g. Deep Work, Client)...") },
-                    singleLine = true,
-                    shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    CategoryColor.entries.forEach { color ->
-                        val isSel = color == selectedColor
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    CategoryColor.entries.take(5).forEach { col ->
+                        val active = selectedColor == col
                         Box(
                             modifier = Modifier
-                                .size(34.dp)
+                                .size(24.dp)
                                 .clip(CircleShape)
-                                .background(color.toThemeStyle().preview)
+                                .background(categoryPreviewColor(col))
                                 .border(
-                                    width = if (isSel) 2.5.dp else 1.dp,
-                                    color = if (isSel) textPrimary else Color.Black.copy(alpha = 0.1f),
+                                    width = if (active) 2.dp else 0.dp,
+                                    color = OneReflectionColors.InkPrimary,
                                     shape = CircleShape
                                 )
-                                .clickable { selectedColor = color },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (isSel) {
-                                Icon(Icons.Default.Check, contentDescription = null, tint = BrandColors.OnSurfaceDark, modifier = Modifier.size(16.dp))
-                            }
-                        }
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        if (editingId != null) {
-                            onUpdate(editingId!!, nameInput, selectedColor)
-                            editingId = null
-                        } else {
-                            onAdd(nameInput, selectedColor)
-                        }
-                        nameInput = ""
-                    },
-                    enabled = nameInput.isNotBlank(),
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = BrandColors.OnSurfaceDark, contentColor = Color.White),
-                    modifier = Modifier.fillMaxWidth().height(42.dp)
-                ) {
-                    Text(if (editingId != null) "Save Tag Changes" else "+ Add Custom Tag", style = MaterialTheme.typography.labelMedium)
-                }
-
-                Column(
-                    modifier = Modifier.heightIn(max = 190.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    categories.take(6).forEach { cat ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(if (oledMode) BrandColors.OledBlack else BrandColors.SurfaceContainerLow)
-                                .padding(horizontal = 10.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Box(modifier = Modifier.size(14.dp).clip(CircleShape).background(cat.color.toThemeStyle().preview))
-                                Text(cat.name, style = MaterialTheme.typography.labelMedium, color = textPrimary)
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                IconButton(
-                                    onClick = {
-                                        editingId = cat.id
-                                        nameInput = cat.name
-                                        selectedColor = cat.color
-                                    },
-                                    modifier = Modifier.size(30.dp)
-                                ) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Edit tag", tint = textPrimary, modifier = Modifier.size(15.dp))
-                                }
-                                IconButton(
-                                    onClick = { onDelete(cat.id) },
-                                    modifier = Modifier.size(30.dp)
-                                ) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete tag", tint = BrandColors.HighPriorityText, modifier = Modifier.size(15.dp))
-                                }
-                            }
-                        }
+                                .clickable { selectedColor = col }
+                        )
                     }
                 }
             }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (newName.isNotBlank()) {
+                        onAdd(newName, selectedColor)
+                        newName = ""
+                    } else {
+                        onDismiss()
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = OneReflectionColors.Terracotta)
+            ) {
+                Text(if (newName.isNotBlank()) "Add" else "Done", color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Icon(Icons.Filled.Close, contentDescription = null, modifier = Modifier.size(14.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("Close")
+            }
         }
-    }
+    )
 }

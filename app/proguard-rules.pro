@@ -1,2 +1,1 @@
-# ProGuard rules for OneReflection
--keepattributes *Annotation*
+# Add project specific ProGuard rules here.

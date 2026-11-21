@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">OneReflection</string>
+    <string name="app_tagline">One app. One connection. Every moment matters.</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_alarms">Alarms</string>
+    <string name="nav_tasks">Tasks</string>
+    <string name="nav_chats">Chats</string>
+    <string name="nav_circle">Circle</string>
+    <string name="cd_open_navigator">Toggle Screen Navigator</string>
+    <string name="cd_toggle_oled">Toggle OLED Pure Black Mode</string>
+    <string name="cd_notifications">Notifications</string>
+    <string name="cd_user_profile">User Profile</string>
+    <string name="cd_create_voice">Create new voice entry or task</string>
+    <string name="cd_play_audio">Play or pause audio</string>
+    <string name="cd_close">Close</string>
+</resources>
